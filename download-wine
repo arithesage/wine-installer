@@ -1,0 +1,236 @@
+#!/bin/bash
+
+function abort
+{
+    REASON=$1
+
+    if [ "$REASON" == "" ];
+    then
+        echo $REASON
+    fi
+
+    echo ""
+    
+    exit 1
+}
+
+
+function usage
+{
+    echo "Usage: download-wine <branch> <version> [i386|amd64|both] [out dir]"
+    echo ""
+    echo "Branch is one of these: stable, devel or staging."
+    echo ""
+    echo "Packages will be downloaded by default in /var/tmp/wine-pkgs"
+    echo "but you can specify a custom path in 'out dir'."
+    echo ""
+    echo "WARNING! You can download Wine without admin privileges, BUT,"
+    echo "you need them for updating APT database and GPG key installing."
+    echo ""
+}
+
+
+if [ "$1" == "" ] || [ "$1" == "-h" ] || [ "$1" == "--help" ];
+then
+    usage
+    abort
+fi
+
+
+WINE_BRANCH=$1
+WINE_VERSION=$2
+ARCH=$3
+DOWNLOAD_DIR=$4
+
+
+if ! [ "$WINE_BRANCH" == "stable" ] && ! [ "$WINE_BRANCH" == "devel" ] && \
+   ! [ "$WINE_BRANCH" == "staging" ];
+then
+    abort "Wrong branch name: '$WINE_BRANCH'."
+fi
+
+
+if [ "$ARCH" == "" ];
+then
+    echo "No architecture provided. Checking this machine one..."
+    echo ""
+
+    ARCH=$(uname -m)
+fi
+
+
+if ! [ "$ARCH" == "i386" ] && ! [ "$ARCH" == "amd64" ] && \
+   ! [ "$ARCH" == "both" ];
+then
+    echo "Invalid architecture value '${ARCH}'."
+    abort "Only i386, amd64 or both are valid."
+fi
+
+
+if [ "$DISTRO_CODENAME" == "" ];
+then
+    DISTRO_CODENAME=$(cat /etc/os-release | \
+                      grep VERSION_CODENAME | cut -d '=' -f2)
+fi
+
+
+if [ "$DISTRO_CODENAME" == "" ];
+then
+    echo "Can't detect your distro codename."
+    abort "Do 'cat /etc/os-release' and manually export it in DISTRO_CODENAME"
+fi
+
+
+WINE_BUILDS_URL="https://dl.winehq.org/wine-builds"
+DEBIAN_BUILDS_URL="${WINE_BUILDS_URL}/debian/dists/${DISTRO_CODENAME}"
+
+WINE_SOURCES_URL="$DEBIAN_BUILDS_URL/winehq-${DISTRO_CODENAME}.sources"
+WINE_GPG_URL="$WINE_BUILDS_URL/winehq.key"
+
+
+if [ "$WINE_VERSION" == "" ];
+then
+    echo "You must specify a version to download."
+    abort "Check available ones in ${DEBIAN_BUILDS_URL}/main/binary-${ARCH}."
+fi
+
+
+if ! [ "$DOWNLOAD_DIR" == "" ];
+then
+    WINE_DOWNLOAD_DIR="$DOWNLOAD_DIR"
+else
+    WINE_DOWNLOAD_DIR="/var/tmp/wine-pkgs/${WINE_VERSION}"
+fi
+
+if ! [ -d "${WINE_DOWNLOAD_DIR}" ];
+then
+    mkdir -p "${WINE_DOWNLOAD_DIR}"
+fi
+
+
+echo -n "Checking if Wine site is available..."
+curl -s https://dl.winehq.org > /dev/null
+
+if [ "$?" == "0" ];
+then
+    WINE_URL_OK=1
+    echo "OK"
+else
+    echo "ERROR"
+fi
+
+
+if ! [ "$WINE_URL_OK" == "1" ];
+then
+    abort "Can't download Wine."
+fi
+
+
+if ! [ -f "/etc/apt/keyrings/winehq-archive.key" ];
+then
+    if ! [ -d "/etc/apt/keyrings" ];
+    then
+        sudo mkdir "/etc/apt/keyrings"
+    fi
+
+    sudo wget -O /etc/apt/keyrings/winehq-archive.key $WINE_GPG_URL
+
+    if ! [ "$?" == "0" ];
+    then
+        abort "Failed downloading Wine GPG key."
+    fi
+
+    echo "Added Wine GPG key to keyrings."
+fi
+
+
+echo ""
+echo "Checking for updated APT sources.list..."
+echo "----------------------------------------"
+sudo wget -NP /etc/apt/sources.list.d/ $WINE_SOURCES_URL
+
+if [ "$?" == "0" ];
+then
+    echo "Updated sources.list in APT database."
+fi
+
+
+echo ""
+echo "Updating APT database..."
+echo "------------------------"
+
+sudo apt update
+
+if ! [ "$?" == "0" ];
+then
+    echo ""
+    echo "APT database updating failed. You have not admin permissions but,"
+    echo "if the database was updated previously, you may still"
+    echo "be able to download Wine..."
+    echo ""
+fi
+
+
+echo ""
+echo "Downloading wine-${WINE_BRANCH} (${WINE_VERSION})..."
+echo "-----------------------------------------------------"
+
+cd $WINE_DOWNLOAD_DIR
+
+# Allows fitting apt download commands in 80 colunns
+BRANCH=$WINE_BRANCH
+VERSION=$WINE_VERSION
+DISTRO=$DISTRO_CODENAME
+
+if ! [ "$ARCH" == "both" ];
+then
+    apt download wine-${BRANCH}:${ARCH}=${VERSION}~${DISTRO}-1
+    apt download wine-${BRANCH}-${ARCH}=${VERSION}~${DISTRO}-1
+
+else
+    apt download wine-${BRANCH}:i386=${VERSION}~${DISTRO}-1
+    apt download wine-${BRANCH}-i386=${VERSION}~${DISTRO}-1
+    apt download wine-${BRANCH}:amd64=${VERSION}~${DISTRO}-1
+    apt download wine-${BRANCH}-amd64=${VERSION}~${DISTRO}-1
+fi
+
+
+if ! [ "$?" == "0" ];
+then
+    abort "Download failed."
+fi
+
+
+echo "#!/bin/bash" > "$PWD/extract"
+echo "" >> "$PWD/extract"
+
+echo "echo \"Extracting Wine in /var/tmp/wine-${WINE_VERSION} ...\"" \
+      >> "$PWD/extract"
+
+echo "for package in *;" >> "$PWD/extract"
+echo "do" >> "$PWD/extract"
+
+echo "    dpkg-deb -x \$package /var/tmp/wine-${WINE_VERSION}" \
+     >> "$PWD/extract"
+
+echo "done" >> "$PWD/extract"
+echo "" >> "$PWD/extract"
+echo "echo \"\"">> "$PWD/extract"
+echo "echo \"Done.\"" >> "$PWD/extract"
+echo "echo \"\"" >> "$PWD/extract"
+
+chmod +x "$PWD/extract"
+
+
+echo ""
+echo "Done."
+echo ""
+
+
+
+
+
+
+
+
+

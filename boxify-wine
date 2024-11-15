@@ -1,0 +1,92 @@
+#!/bin/bash
+
+function abort
+{
+    REASON=$1
+
+    if [ "$REASON" == "" ];
+    then
+        echo $REASON
+    fi
+
+    echo ""
+    
+    exit 1
+}
+
+
+function usage
+{
+    echo "Usage: boxify-wine <Wine path>"
+    echo ""
+    echo "Create an script for every Wine executable that calls"
+    echo "Box86 or Box64, depending of the executable architecture."
+    echo ""
+}
+
+
+if ! [ "$TERMUX_VERSION" == "" ];
+then
+    abort "This script isn't for Termux."
+fi
+
+
+sudo -v
+
+if ! [ "$?" == "0" ];
+then
+    abort "You need to be root, or have sudo permissions."
+fi
+
+
+if [ "$1" == "" ] || [ "$1" == "" ] || [ "$1" == "" ];
+then
+    usage
+    abort
+fi
+
+
+
+
+WINE_PATH=$1
+
+
+if ! [ -f "${WINE_PATH}/bin/wineboot" ];
+then
+    abort "Wine not detected '$WINE_PATH'."
+fi
+
+
+if [ -f "${WINE_PATH}/bin/wineboot-x86" ];
+then
+    abort "This Wine installation has been boxified already."
+fi
+
+
+echo "Boxifying Wine installation at ${WINE_PATH} ..."
+echo "-----------------------------------------------"
+
+while IFS= read -r filename;
+do
+    if [ -f "${WINE_PATH}/bin/${filename}" ];
+    then
+        sudo mv "${WINE_PATH}/bin/${filename}" \
+                "${WINE_PATH}/bin/${filename}-x86"
+        
+        sudo boxify "${WINE_PATH}/bin/${filename}"
+    fi
+done < $HOME/wine-binaries
+
+
+echo ""
+echo "Updating symlinks ..."
+echo "---------------------" 
+
+sudo ln -sf "${WINE_PATH}/bin/winegcc" "${WINE_PATH}/bin/winecpp"
+sudo ln -sf "${WINE_PATH}/bin/winegcc" "${WINE_PATH}/bin/wineg++"
+
+
+echo "Done. Execute switch-wine ${WINE_PATH} to use this installation."
+echo ""
+
+
