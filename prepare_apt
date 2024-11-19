@@ -1,0 +1,78 @@
+#!/bin/bash
+
+function abort
+{
+    REASON=$1
+
+    if [ "$REASON" == "" ];
+    then
+        echo $REASON
+    fi
+
+    echo ""
+    
+    exit 1
+}
+
+
+
+
+SCRIPT_DIR=$(realpath $(dirname $0))
+
+
+if ! [ -f "/etc/apt/keyrings/winehq-archive.key" ];
+then
+    source "$SCRIPT_DIR/get_wine_urls"
+
+    if [ "$WINE_GPG_URL" == "" ];
+    then
+        abort "Could not obtain Wine GPG download URL."
+    fi
+
+    if ! [ -d "/etc/apt/keyrings" ];
+    then
+        sudo mkdir "/etc/apt/keyrings"
+    fi
+
+    sudo wget -O /etc/apt/keyrings/winehq-archive.key $WINE_GPG_URL
+
+    if ! [ "$?" == "0" ];
+    then
+        abort "Failed downloading Wine GPG key."
+    fi
+
+    echo "Added Wine GPG key to keyrings."
+
+else
+    echo "Wine GPG key already present."
+fi
+
+
+if [ "$WINE_SOURCES_URL" == "" ];
+then
+    abort "Could not obtain Wine sources.list for APT."
+fi
+
+
+echo ""
+echo "Checking for updated APT sources.list..."
+echo "----------------------------------------"
+
+SOURCES_LIST_FILE="/etc/apt/sources.list.d/"
+SOURCES_LIST_FILE+="winehq-${DISTRO_VERSION_NAME}.sources"
+
+sudo wget -NP /etc/apt/sources.list.d/ $WINE_SOURCES_URL
+
+if [ "$?" == "0" ];
+then
+    echo "Updated sources.list in APT database."
+    echo ""
+else
+    if [ "$?" == "1" ] && [ -f "${SOURCES_LIST_FILE}" ];
+    then
+        echo "Sources.list is up to date."
+        echo ""
+    fi
+fi
+
+

@@ -1,0 +1,55 @@
+#!/bin/bash
+
+function abort
+{
+    REASON=$1
+
+    if [ "$REASON" == "" ];
+    then
+        echo $REASON
+    fi
+
+    echo ""
+    
+    exit 1
+}
+
+
+function usage
+{
+    echo "Tells what package architecture requires this distro."
+    echo ""
+    echo "Usage: os_name [-h|--help] [-q|--quiet]"
+    echo ""
+    echo "-h|--help: Shows this help"
+    echo "-q|--quiet: Only PACKAGES_ARCH variable gets exported. No output."
+    echo ""
+}
+
+
+
+
+if [ "$1" == "-h" ] || [ "$1" == "--help" ];
+then
+    usage
+    abort
+fi
+
+
+if [ "$1" == "-q" ] || [ "$1" == "--quiet" ];
+then
+    QUIET=1
+fi
+
+
+export DISTRO_NAME=$(cat /etc/os-release | grep ^ID | cut -d '=' -f 2)
+export DISTRO_VERSION_NAME=$(cat /etc/os-release | grep CODENAME | cut -d '=' -f 2)
+
+if ! [ "$QUIET" == "1" ];
+then
+    echo "$DISTRO_NAME $DISTRO_VERSION_NAME"
+    echo ""
+fi
+
+
+

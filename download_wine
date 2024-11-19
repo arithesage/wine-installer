@@ -21,11 +21,19 @@ function usage
     echo ""
     echo "Branch is one of these: stable, devel or staging."
     echo ""
+    echo "If no architecture is specified, host's one will be used."
+    echo ""
+    echo "Also, if host architecture is amd64, the packages for both"
+    echo "architectures will be downloaded."
+    echo ""
     echo "Packages will be downloaded by default in /var/tmp/wine-pkgs"
     echo "but you can specify a custom path in 'out dir'."
     echo ""
     echo "WARNING! You can download Wine without admin privileges, BUT,"
     echo "you need them for updating APT database and GPG key installing."
+    echo ""
+    echo "NOTE: This scripts was made for downloading Wine in ARM machines."
+    echo "      If you are in x86, use 'apt-install-wine32/64' instead."
     echo ""
 }
 
@@ -37,10 +45,23 @@ then
 fi
 
 
+
+
+SCRIPT_DIR=$(realpath $(dirname $0))
+
+
 WINE_BRANCH=$1
 WINE_VERSION=$2
 ARCH=$3
 DOWNLOAD_DIR=$4
+
+
+source "$SCRIPT_DIR/check_site"
+
+if ! [ "$WINE_URL_OK" == "1" ];
+then
+    abort "Can't download Wine."
+fi
 
 
 if ! [ "$WINE_BRANCH" == "stable" ] && ! [ "$WINE_BRANCH" == "devel" ] && \
@@ -50,12 +71,17 @@ then
 fi
 
 
+source "$SCRIPT_DIR/packages_arch" --quiet
+
+
 if [ "$ARCH" == "" ];
 then
-    echo "No architecture provided. Checking this machine one..."
-    echo ""
+    echo "No architecture provided. Using host one (${MACHINE_ARCH})."
 
-    ARCH=$(uname -m)
+    if [ "$PACKAGES_ARCH" == "amd64" ];
+    then
+        ARCH="both"
+    fi
 fi
 
 
@@ -67,25 +93,23 @@ then
 fi
 
 
-if [ "$DISTRO_CODENAME" == "" ];
+if [[ $PACKAGES_ARCH == arm* ]] || [ "$PACKAGES_ARCH" == "amd64" ];
 then
-    DISTRO_CODENAME=$(cat /etc/os-release | \
-                      grep VERSION_CODENAME | cut -d '=' -f2)
+    if [ "$ARCH" == "i386" ] || [ "$ARCH" == "both" ];
+    then
+        sudo dpkg --add-architecture i386
+        echo "Added i386 architecture to dpkg if wasn't available yet."
+        echo ""
+    fi
+
+    if [ "$ARCH" == "amd64" ] || [ "$ARCH" == "both" ] && \
+     ! [ "$PACKAGES_ARCH" == "amd64" ];
+    then
+        sudo dpkg --add-architecture amd64
+        echo "Added amd64 architecture to dpkg if wasn't available yet."
+        echo ""
+    fi
 fi
-
-
-if [ "$DISTRO_CODENAME" == "" ];
-then
-    echo "Can't detect your distro codename."
-    abort "Do 'cat /etc/os-release' and manually export it in DISTRO_CODENAME"
-fi
-
-
-WINE_BUILDS_URL="https://dl.winehq.org/wine-builds"
-DEBIAN_BUILDS_URL="${WINE_BUILDS_URL}/debian/dists/${DISTRO_CODENAME}"
-
-WINE_SOURCES_URL="$DEBIAN_BUILDS_URL/winehq-${DISTRO_CODENAME}.sources"
-WINE_GPG_URL="$WINE_BUILDS_URL/winehq.key"
 
 
 if [ "$WINE_VERSION" == "" ];
@@ -93,6 +117,9 @@ then
     echo "You must specify a version to download."
     abort "Check available ones in ${DEBIAN_BUILDS_URL}/main/binary-${ARCH}."
 fi
+
+
+source "$SCRIPT_DIR/get_wine_urls" $WINE_BRANCH $WINE_VERSION $ARCH
 
 
 if ! [ "$DOWNLOAD_DIR" == "" ];
@@ -108,50 +135,14 @@ then
 fi
 
 
-echo -n "Checking if Wine site is available..."
-curl -s https://dl.winehq.org > /dev/null
-
-if [ "$?" == "0" ];
-then
-    WINE_URL_OK=1
-    echo "OK"
-else
-    echo "ERROR"
-fi
-
-
-if ! [ "$WINE_URL_OK" == "1" ];
-then
-    abort "Can't download Wine."
-fi
-
-
 if ! [ -f "/etc/apt/keyrings/winehq-archive.key" ];
 then
-    if ! [ -d "/etc/apt/keyrings" ];
-    then
-        sudo mkdir "/etc/apt/keyrings"
-    fi
-
-    sudo wget -O /etc/apt/keyrings/winehq-archive.key $WINE_GPG_URL
+    source "$SCRIPT_DIR/prepare_apt"
 
     if ! [ "$?" == "0" ];
     then
-        abort "Failed downloading Wine GPG key."
+        abort "Could not prepare APT database."
     fi
-
-    echo "Added Wine GPG key to keyrings."
-fi
-
-
-echo ""
-echo "Checking for updated APT sources.list..."
-echo "----------------------------------------"
-sudo wget -NP /etc/apt/sources.list.d/ $WINE_SOURCES_URL
-
-if [ "$?" == "0" ];
-then
-    echo "Updated sources.list in APT database."
 fi
 
 
@@ -175,12 +166,14 @@ echo ""
 echo "Downloading wine-${WINE_BRANCH} (${WINE_VERSION})..."
 echo "-----------------------------------------------------"
 
+source "$SCRIPT_DIR/os_name"
+
 cd $WINE_DOWNLOAD_DIR
 
 # Allows fitting apt download commands in 80 colunns
 BRANCH=$WINE_BRANCH
 VERSION=$WINE_VERSION
-DISTRO=$DISTRO_CODENAME
+DISTRO=$DISTRO_VERSION_NAME
 
 if ! [ "$ARCH" == "both" ];
 then
@@ -207,7 +200,8 @@ echo "" >> "$PWD/extract"
 echo "echo \"Extracting Wine in /var/tmp/wine-${WINE_VERSION} ...\"" \
       >> "$PWD/extract"
 
-echo "for package in *;" >> "$PWD/extract"
+echo "" >> "$PWD/extract"
+echo "for package in *.deb;" >> "$PWD/extract"
 echo "do" >> "$PWD/extract"
 
 echo "    dpkg-deb -x \$package /var/tmp/wine-${WINE_VERSION}" \
