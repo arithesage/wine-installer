@@ -56,7 +56,7 @@ ARCH=$3
 DOWNLOAD_DIR=$4
 
 
-source "$SCRIPT_DIR/check_site"
+"$SCRIPT_DIR/check_site"
 
 if ! [ "$WINE_URL_OK" == "1" ];
 then
@@ -71,7 +71,7 @@ then
 fi
 
 
-source "$SCRIPT_DIR/packages_arch" --quiet
+"$SCRIPT_DIR/packages_arch" --quiet
 
 
 if [ "$ARCH" == "" ];
@@ -119,7 +119,7 @@ then
 fi
 
 
-source "$SCRIPT_DIR/get_wine_urls" $WINE_BRANCH $WINE_VERSION $ARCH
+"$SCRIPT_DIR/get_wine_urls" $WINE_BRANCH $WINE_VERSION $ARCH --quiet
 
 
 if ! [ "$DOWNLOAD_DIR" == "" ];
@@ -137,7 +137,7 @@ fi
 
 if ! [ -f "/etc/apt/keyrings/winehq-archive.key" ];
 then
-    source "$SCRIPT_DIR/prepare_apt"
+    "$SCRIPT_DIR/prepare_apt"
 
     if ! [ "$?" == "0" ];
     then
@@ -166,7 +166,7 @@ echo ""
 echo "Downloading wine-${WINE_BRANCH} (${WINE_VERSION})..."
 echo "-----------------------------------------------------"
 
-source "$SCRIPT_DIR/os_name"
+"$SCRIPT_DIR/os_name"
 
 cd $WINE_DOWNLOAD_DIR
 

@@ -1,75 +1,28 @@
 #!/bin/bash
 
-function abort
-{
-    REASON=$1
-
-    if [ "$REASON" == "" ];
-    then
-        echo $REASON
-    fi
-
-    echo ""
-    
-    exit 1
-}
-
-
-function usage
-{
-    echo "Tells what package architecture requires this distro."
-    echo ""
-    echo "Usage: packages_arch [-h|--help] [-q|--quiet]"
-    echo ""
-    echo "-h|--help: Shows this help"
-    echo "-q|--quiet: Only PACKAGES_ARCH variable gets exported. No output."
-    echo ""
-}
-
-
-
-
-if [ "$1" == "-h" ] || [ "$1" == "--help" ];
-then
-    usage
-    abort
-fi
-
-
-if [ "$1" == "-q" ] || [ "$1" == "--quiet" ];
-then
-    QUIET=1
-fi
-
-
 MACHINE_ARCH=$(uname -m)
 
 
 if [[ $MACHINE_ARCH == arm* ]];
 then
-    export PACKAGES_ARCH="armhf"
+    echo "armhf"
 
 elif [ "$MACHINE_ARCH" == "aarch64" ];
 then
-    export PACKAGES_ARCH="arm64";
+    echo "arm64"
 
 elif [ "$MACHINE_ARCH" == "x86_64" ];
 then
-    export PACKAGES_ARCH="amd64"
+    echo "amd64"
 
 elif [[ $MACHINE_ARCH == x86* ]];
 then
-    export PACKAGES_ARCH="i386"
+    echo "i386"
 else
-    export PACKAGES_ARCH="${MACHINE_ARCH}"
+    echo "$MACHINE_ARCH"
 fi
 
-
-if ! [ "$QUIET" == "1" ];
-then
-    echo "$PACKAGES_ARCH"
-    echo ""
-fi
+echo ""
 
 
 
