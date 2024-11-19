@@ -18,8 +18,8 @@ function abort
 function apt_install
 {
     PACKAGE=$1
-    VERSION=$2
-    ARCH=$3
+    ARCH=$2
+    VERSION=$3
 
     if ! [ "$VERSION" == "" ];
     then
@@ -78,7 +78,7 @@ then
 fi
 
 
-"$SCRIPT_DIR/check_site"
+source "$SCRIPT_DIR/check_site"
 
 if ! [ "$WINE_URL_OK" == "1" ];
 then
@@ -95,24 +95,28 @@ fi
 
 "$SCRIPT_DIR/prepare_apt"
 
-if [ "$?" == "0" ];
-then
-    echo ""
-    echo "Installing Wine (32 bits) ..."
-    echo "-----------------------------"
-    
-    if [ "$WINE_VERSION" == "" ];
-    then
-        apt_install wine-${WINE_BRANCH} i386
-        apt_install wine-${WINE_BRANCH}-i386 i386
-    else
-        apt_install wine-${WINE_BRANCH} i386 ${WINE_VERSION}
-        apt_install wine-${WINE_BRANCH} i386 ${WINE_VERSION}
-    fi
 
-    echo ""
-    echo "Done."
+if ! [ "$?" == "0" ];
+then
+    abort "APT failed preparing."
 fi
+
+
+echo ""
+echo "Installing Wine (32 bits) ..."
+echo "-----------------------------"
+
+if [ "$WINE_VERSION" == "" ];
+then
+    apt_install wine-${WINE_BRANCH} i386
+    apt_install wine-${WINE_BRANCH}-i386 i386
+else
+    apt_install wine-${WINE_BRANCH} i386 ${WINE_VERSION}
+    apt_install wine-${WINE_BRANCH} i386 ${WINE_VERSION}
+fi
+
+echo ""
+echo "Done."
 
 
 

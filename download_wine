@@ -54,6 +54,7 @@ WINE_BRANCH=$1
 WINE_VERSION=$2
 ARCH=$3
 DOWNLOAD_DIR=$4
+DISTRO_VERSION_NAME=$("$SCRIPT_DIR/os_version_name")
 
 
 "$SCRIPT_DIR/check_site"
@@ -71,7 +72,7 @@ then
 fi
 
 
-"$SCRIPT_DIR/packages_arch" --quiet
+source "$SCRIPT_DIR/packages_arch" --quiet
 
 
 if [ "$ARCH" == "" ];
@@ -119,7 +120,8 @@ then
 fi
 
 
-"$SCRIPT_DIR/get_wine_urls" $WINE_BRANCH $WINE_VERSION $ARCH --quiet
+
+source "$SCRIPT_DIR/get_wine_urls" $WINE_BRANCH $DISTRO_VERSION_NAME --quiet
 
 
 if ! [ "$DOWNLOAD_DIR" == "" ];
@@ -165,8 +167,6 @@ fi
 echo ""
 echo "Downloading wine-${WINE_BRANCH} (${WINE_VERSION})..."
 echo "-----------------------------------------------------"
-
-"$SCRIPT_DIR/os_name"
 
 cd $WINE_DOWNLOAD_DIR
 

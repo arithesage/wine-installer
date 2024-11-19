@@ -15,15 +15,18 @@ function abort
 }
 
 
-
-
 SCRIPT_DIR=$(realpath $(dirname $0))
+
+
+
+
+DISTRO_VERSION_NAME=$("$SCRIPT_DIR/os_version_name")
+
+source "$SCRIPT_DIR/get_wine_urls"
 
 
 if ! [ -f "/etc/apt/keyrings/winehq-archive.key" ];
 then
-    source "$SCRIPT_DIR/get_wine_urls"
-
     if [ "$WINE_GPG_URL" == "" ];
     then
         abort "Could not obtain Wine GPG download URL."
@@ -42,9 +45,11 @@ then
     fi
 
     echo "Added Wine GPG key to keyrings."
+    echo ""
 
 else
     echo "Wine GPG key already present."
+    echo ""
 fi
 
 
@@ -74,5 +79,12 @@ else
         echo ""
     fi
 fi
+
+
+echo ""
+echo "Updating available packages ..."
+echo "-------------------------------"
+
+sudo apt update
 
 
