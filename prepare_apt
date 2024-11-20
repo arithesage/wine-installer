@@ -81,10 +81,4 @@ else
 fi
 
 
-echo ""
-echo "Updating available packages ..."
-echo "-------------------------------"
-
-sudo apt update
-
 

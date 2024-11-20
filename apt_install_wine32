@@ -23,7 +23,7 @@ function apt_install
 
     if ! [ "$VERSION" == "" ];
     then
-        VERSION="=${VERSION}"
+        VERSION="=${VERSION}~${DISTRO_VERSION_NAME}-1"
     fi
 
     if ! [ "$ARCH" == "" ];
@@ -71,6 +71,8 @@ SCRIPT_DIR=$(realpath $(dirname $0))
 WINE_BRANCH=$1
 WINE_VERSION=$2
 
+export DISTRO_VERSION_NAME=$("$SCRIPT_DIR/os_version_name")
+
 
 if [ "$WINE_BRANCH" == "" ];
 then
@@ -102,9 +104,21 @@ then
 fi
 
 
-echo ""
+echo "-----------------------------"
 echo "Installing Wine (32 bits) ..."
 echo "-----------------------------"
+
+sudo dpkg --add-architecture i386
+echo "Added i386 architecture to dpkg if wasn't available yet."
+echo ""
+
+
+echo ""
+echo "Updating available packages ..."
+echo "-------------------------------"
+
+sudo apt update
+
 
 if [ "$WINE_VERSION" == "" ];
 then
@@ -114,6 +128,13 @@ else
     apt_install wine-${WINE_BRANCH} i386 ${WINE_VERSION}
     apt_install wine-${WINE_BRANCH} i386 ${WINE_VERSION}
 fi
+
+
+if ! [ -f "/usr/bin/winetricks" ];
+then
+    "$SCRIPTS_DIR/apt_install_winetricks"
+fi
+
 
 echo ""
 echo "Done."

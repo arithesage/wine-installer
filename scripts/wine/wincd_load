@@ -1,0 +1,65 @@
+#!/bin/bash
+
+if [ "$WIN_D" == "" ];
+then
+    echo "No WINE prefix loaded."
+    echo "Call win_load <prefix name> [win32|win64]"
+    echo "Set WIN_ROOT if need to use a different path as prefixes root."
+    echo ""
+    exit 1
+fi
+
+function usage
+{
+    echo "wincd_load <iso path>"
+    echo "Loads the given ISO in the prefix's D drive."
+    echo ""
+    exit 1
+}
+
+
+if ! [ -d "$WIN_D" ];
+then
+    mkdir -p "$WINEPREFIX/drive_d"
+    ln -s "$WINEPREFIX/drive_d" "$WINEPREFIX/dosdevices/d:"
+fi
+
+ISO=$1
+
+if ! [ -f "$ISO" ];
+then
+    echo "ERROR: Cannot access '$ISO'."
+    echo ""
+    exit 1
+fi
+
+dir_empty "$WIN_D"
+
+if [ "$?" == "1" ];
+then
+    echo "There is a CD already loaded."
+    echo "Ejecting it first..."
+
+    wincd_eject
+
+    if [ "$?" == "1" ];
+    then
+	echo "Failed!"
+	echo ""
+	exit 1
+    fi
+fi
+
+fuseiso "$ISO" "$WIN_D"
+
+if ! [ "$?" == "0" ];
+then
+    echo "Failed loading ISO."
+    echo "If trying to load a .CUE/BIN image, load the .BIN part, not .CUE."
+    echo ""
+    exit 1
+fi
+
+echo "ISO loaded at '$WIN_D'."
+echo ""
+

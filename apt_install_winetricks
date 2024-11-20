@@ -1,0 +1,76 @@
+#!/bin/bash
+
+function abort
+{
+    REASON=$1
+
+    if [ "$REASON" == "" ];
+    then
+        echo $REASON
+    fi
+
+    echo ""
+    
+    exit 1
+}
+
+
+SCRIPT_DIR=$(realpath $(dirname $0))
+
+
+
+echo ""
+echo "Checking for Winetricks ..."
+
+
+if [ -f "/usr/bin/winetricks" ];
+then
+    abort "Winetricks is already installed."
+fi
+
+
+echo ""
+echo "Not found. Installing ..."
+echo "-------------------------"
+
+
+sudo apt-cache search winetricks > /dev/null
+
+if ! [ "$?" == "0" ];
+then
+    CONTRIB_SOURCES_LST="/etc/apt/sources.list.d/debian-contrib.sources"
+
+    echo "Types: deb" > $CONTRIB_SOURCES_LST
+    echo "URIs: http://deb.debian.org/debian" >> $CONTRIB_SOURCES_LST
+    echo "Suites: bookworm bookworm-updates" >> $CONTRIB_SOURCES_LST
+    echo "Components: contrib" >> $CONTRIB_SOURCES_LST
+    
+    echo "Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg" \
+            >> $CONTRIB_SOURCES_LST
+
+    echo "Enabled 'contrib' packages."
+
+    echo ""
+    echo "Refreshing APT database ..."
+    echo "---------------------------"
+
+    sudo apt update 
+fi
+
+
+echo ""
+
+sudo apt install winetricks
+
+
+if [ "$?" == "0" ];
+then
+    echo ""
+    echo "Done."
+    echo ""
+fi
+
+
+
+
+

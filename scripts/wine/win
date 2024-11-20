@@ -1,0 +1,44 @@
+#!/bin/bash
+
+if [ "$1" == "" ] || [ "$1" == "-h" ] || [ "$1" == "--h" ];
+then
+    echo "Usage: win <exe path>"
+    echo "Executes the given executable using the WINE profile located at:"
+    echo "$HOME/wineprefix/default"
+    echo ""
+
+    exit 1
+fi
+
+WINEPREFIXES=$HOME/wineprefixes
+
+EXE=$1
+ARGS=$2
+
+EXE_PATH=$(realpath $(dirname $1))
+
+DEFAULT_PREFIX="$WINEPREFIXES/default"
+DEFAULT_PREFIX_ACTIVATOR="$DEFAULT_PREFIX/activate"
+
+if [ -f "$DEFAULT_PREFIX_ACTIVATOR" ];
+then
+    . $DEFAULT_PREFIX_ACTIVATOR
+fi
+
+if ! [ "$WIN_C" == "" ];
+then
+    if [ -f "$EXE_PATH/.winecfg" ];
+    then
+        . "$EXE_PATH/.winecfg"
+    fi
+
+    if [ "$ARGS" == "" ];
+    then
+        echo "Launching '$EXE'..."
+    else
+	echo "Launching '$EXE' with args '$ARGS' ..."
+    fi
+
+    wine "$EXE" $ARGS
+fi
+
