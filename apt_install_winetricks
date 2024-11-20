@@ -34,19 +34,27 @@ echo "Not found. Installing ..."
 echo "-------------------------"
 
 
-sudo apt-cache search winetricks > /dev/null
+FOUND_PACKAGES=$(sudo apt-cache search --names-only winetricks)
 
-if ! [ "$?" == "0" ];
+if [ "$FOUND_PACKAGES" == "" ];
 then
-    CONTRIB_SOURCES_LST="/etc/apt/sources.list.d/debian-contrib.sources"
+    TMP_CONTRIB_SOURCES_LIST="/var/tmp/debian-contrib.sources"
+    CONTRIB_SOURCES_LIST="/etc/apt/sources.list.d/debian-contrib.sources"
 
-    echo "Types: deb" > $CONTRIB_SOURCES_LST
-    echo "URIs: http://deb.debian.org/debian" >> $CONTRIB_SOURCES_LST
-    echo "Suites: bookworm bookworm-updates" >> $CONTRIB_SOURCES_LST
-    echo "Components: contrib" >> $CONTRIB_SOURCES_LST
+    echo "Types: deb" > $TMP_CONTRIB_SOURCES_LIST
+    echo "URIs: http://deb.debian.org/debian" >> $TMP_CONTRIB_SOURCES_LIST
+    echo "Suites: bookworm bookworm-updates" >> $TMP_CONTRIB_SOURCES_LIST
+    echo "Components: contrib" >> $TMP_CONTRIB_SOURCES_LIST
     
     echo "Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg" \
-            >> $CONTRIB_SOURCES_LST
+            >> $TMP_CONTRIB_SOURCES_LIST
+
+    sudo mv "${TMP_CONTRIB_SOURCES_LIST}" "${CONTRIB_SOURCES_LIST}"
+
+    if ! [ "$?" == "0" ];
+    then
+        abort "Failed enabling 'contrib' packages."
+    fi
 
     echo "Enabled 'contrib' packages."
 
@@ -60,7 +68,7 @@ fi
 
 echo ""
 
-sudo apt install winetricks
+sudo apt install -y winetricks
 
 
 if [ "$?" == "0" ];

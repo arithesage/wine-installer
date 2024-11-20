@@ -114,8 +114,8 @@ echo ""
 
 
 echo ""
-echo "Updating available packages ..."
-echo "-------------------------------"
+echo "Refreshing available packages database ..."
+echo "------------------------------------------"
 
 sudo apt update
 
@@ -132,7 +132,7 @@ fi
 
 if ! [ -f "/usr/bin/winetricks" ];
 then
-    "$SCRIPTS_DIR/apt_install_winetricks"
+    "$SCRIPT_DIR/apt_install_winetricks"
 fi
 
 
