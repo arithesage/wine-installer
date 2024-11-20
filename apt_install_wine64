@@ -46,7 +46,7 @@ function apt_install
 
 function usage
 {
-    echo "Usage: apt_install_wine32 [branch] [version]"
+    echo "Usage: apt_install_wine64 [branch] [version]"
     echo ""
     echo "Branch is one of these: stable, devel or staging."
     echo ""
@@ -113,11 +113,11 @@ fi
 
 
 echo "-----------------------------"
-echo "Installing Wine (32 bits) ..."
+echo "Installing Wine (64 bits) ..."
 echo "-----------------------------"
 
-sudo dpkg --add-architecture i386
-echo "Added i386 architecture to dpkg if wasn't available yet."
+sudo dpkg --add-architecture amd64
+echo "Added AMD64 architecture to dpkg if wasn't available yet."
 echo ""
 
 
@@ -130,11 +130,11 @@ sudo apt update
 
 if [ "$WINE_VERSION" == "" ];
 then
-    apt_install wine-${WINE_BRANCH} i386
-    apt_install wine-${WINE_BRANCH}-i386 i386
+    apt_install wine-${WINE_BRANCH} amd64
+    apt_install wine-${WINE_BRANCH}-amd64 amd64
 else
-    apt_install wine-${WINE_BRANCH} i386 ${WINE_VERSION}
-    apt_install wine-${WINE_BRANCH} i386 ${WINE_VERSION}
+    apt_install wine-${WINE_BRANCH} amd64 ${WINE_VERSION}
+    apt_install wine-${WINE_BRANCH} amd64 ${WINE_VERSION}
 fi
 
 
