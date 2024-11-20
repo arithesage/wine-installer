@@ -1,0 +1,113 @@
+#!/bin/bash
+
+function abort
+{
+    REASON=$1
+
+    if [ "$REASON" == "" ];
+    then
+        echo $REASON
+    fi
+
+    echo ""
+    
+    exit 1
+}
+
+
+SCRIPT_DIR=$(realpath $(dirname $0))
+
+
+
+
+source "$SCRIPT_DIR/packages_arch"
+
+if ! [ "$PACKAGES_ARCH" == "armhf" ] && ! [ "$PACKAGES_ARCH" == "arm64" ];
+then
+    abort "This script isn't intended for x86 machines."
+fi
+
+
+if ! [ "$TERMUX_VERSION" == "" ];
+then
+    abort "This script isn't for Termux."
+fi
+
+
+if ! [ "$ANDROID_DATA" == "" ];
+then
+    IN_ANDROID=1
+fi
+
+
+DISTRO_VERSION_NAME=$("$SCRIPT_DIR/os_version_name")
+
+if ! [ "$DISTRO_VERSION_NAME" == "bullseye" ];
+then
+    abort "A Debian bullseye distro is needed."
+fi
+
+
+CACHE="$SCRIPT_DIR/cache/debian/bullseye"
+
+
+if [ "$IN_ANDROID" == "1" ];
+then
+    echo "We are in Android, so, we'll use the cached Wine 9.3 directly"
+    echo "because Box86-64 doesn't support newer versions yet."
+    echo ""
+
+    USE_CACHED_WINE=1
+fi
+
+
+if [ "$PACKAGES_ARCH" == "armhf" ];
+then
+    WINE_ARCH="i386"
+    "$SCRIPT_DIR/install_deps_for_armhf"
+
+else
+    WINE_ARCH="arm64"
+    "$SCRIPT_DIR/install_deps_for_arm64"
+fi
+
+
+if [ "$USE_CACHED_WINE" == "1" ] && [ "$IN_ANDROID" == "1" ];
+then
+    WINE_BRANCH="staging"
+    WINE_VERSION="9.3"  
+fi
+
+
+echo ""
+echo "Installing Wine ${WINE_BRANCH} ${WINE_VERSION} (${WINE_ARCH}) ..."
+echo "-----------------------------------------------------------------"
+
+PACKAGE_1="wine-${WINE_BRANCH}_${WINE_VERSION}"
+PACKAGE_1+="~bullseye-1_${WINE_ARCH}.deb"
+
+PACKAGE_2="wine-${WINE_BRANCH}-${WINE_ARCH}_${WINE_VERSION}"
+PACKAGE_2+="~bullseye-1_${WINE_ARCH}.deb"
+
+WINE_TMP="/var/tmp/wine-${WINE_VERSION}"
+
+
+sudo dpkg-deb -x "${CACHE}/${PACKAGE_1}" "${WINE_TMP}"
+
+if ! [ "$?" == "0" ];
+then
+    abort "Failed extracting '${PACKAGE_1}'."
+fi
+
+
+sudo dpkg-deb -x "${CACHE}/${PACKAGE_2}" "${WINE_TMP}"
+
+if ! [ "$?" == "0" ];
+then
+    abort "Failed extracting '${PACKAGE_2}'."
+fi
+
+
+echo ""
+echo "Done."
+echo ""

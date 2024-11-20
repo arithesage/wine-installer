@@ -1,0 +1,58 @@
+#!/bin/bash
+
+
+function abort
+{
+    REASON=$1
+
+    if ! [ "$REASON" == "" ];
+    then
+        echo "$REASON"
+    fi
+
+    echo ""
+
+    exit 1
+}
+
+
+if ! [ "$TERMUX_VERSION" == "" ];
+then
+    abort "This script isn't for Termux."
+fi
+
+
+sudo -v
+
+if ! [ "$?" == "0" ];
+then
+    abort "You need to be root, or have sudo permissions."
+fi
+
+
+
+
+echo ""
+echo "Installing dependencies for wine (32 bits) in ARM ..."
+echo "-----------------------------------------------------"
+
+WINE32_DEPS="libasound2:armhf libc6:armhf libglib2.0-0:armhf"
+WINE32_DEPS+=" libgphoto2-6:armhf libgphoto2-port12:armhf"
+WINE32_DEPS+=" libgstreamer-plugins-base1.0-0:armhf libgstreamer1.0-0:armhf"
+WINE32_DEPS+=" libldap-2.4-2:armhf libopenal1:armhf libpcap0.8:armhf"
+WINE32_DEPS+=" libpulse0:armhf libsane1:armhf libudev1:armhf"
+WINE32_DEPS+=" libusb-1.0-0:armhf libvkd3d1:armhf libx11-6:armhf"
+WINE32_DEPS+=" libxext6:armhf libasound2-plugins:armhf"
+WINE32_DEPS+=" ocl-icd-libopencl1:armhf libncurses6:armhf libncurses5:armhf"
+WINE32_DEPS+=" libcap2-bin:armhf libcups2:armhf libdbus-1-3:armhf"
+WINE32_DEPS+=" libfontconfig1:armhf libfreetype6:armhf libglu1-mesa:armhf"
+WINE32_DEPS+=" libglu1:armhf libgnutls30:armhf libgssapi-krb5-2:armhf"
+WINE32_DEPS+=" libkrb5-3:armhf libodbc1:armhf libosmesa6:armhf"
+WINE32_DEPS+=" libsdl2-2.0-0:armhf libv4l-0:armhf libxcomposite1:armhf"
+WINE32_DEPS+=" libxcursor1:armhf libxfixes3:armhf libxi6:armhf"
+WINE32_DEPS+=" libxinerama1:armhf libxrandr2:armhf libxrender1:armhf"
+WINE32_DEPS+=" libxxf86vm1:armhf"
+
+sudo apt install -y $WINE32_DEPS
+
+exit $?
