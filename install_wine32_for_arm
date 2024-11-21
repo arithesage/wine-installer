@@ -15,12 +15,33 @@ function abort
 }
 
 
+function usage
+{
+    echo "Usage: install_wine32_for_arm [branch] [version]"
+    echo ""
+    echo "Branch: stable, staging or devel"
+    echo ""
+}
+
+
 SCRIPT_DIR=$(realpath $(dirname $0))
 
 
 
 
-source "$SCRIPT_DIR/packages_arch"
+if [ "$1" == "-h" ] || [ "$1" == "--help" ];
+then
+    usage
+    abort
+fi
+
+
+WINE_ARCH="i386"
+WINE_BRANCH=$1
+WINE_VERSION=$2
+
+
+source "$SCRIPT_DIR/packages_arch" --quiet
 
 if ! [ "$PACKAGES_ARCH" == "armhf" ] && ! [ "$PACKAGES_ARCH" == "arm64" ];
 then
@@ -61,50 +82,63 @@ then
 fi
 
 
-if [ "$PACKAGES_ARCH" == "armhf" ];
-then
-    WINE_ARCH="i386"
-    "$SCRIPT_DIR/install_deps_for_armhf"
-
-else
-    WINE_ARCH="arm64"
-    "$SCRIPT_DIR/install_deps_for_arm64"
-fi
+"$SCRIPT_DIR/install_deps_for_armhf"
 
 
 if [ "$USE_CACHED_WINE" == "1" ] && [ "$IN_ANDROID" == "1" ];
 then
     WINE_BRANCH="staging"
     WINE_VERSION="9.3"  
+else
+    if [ "$WINE_BRANCH" == "" ];
+    then
+        WINE_BRANCH="staging"
+
+	echo "No branch specified. Using 'staging' by default."
+	echo ""
+    fi
 fi
 
 
-echo ""
-echo "Installing Wine ${WINE_BRANCH} ${WINE_VERSION} (${WINE_ARCH}) ..."
-echo "-----------------------------------------------------------------"
-
-PACKAGE_1="wine-${WINE_BRANCH}_${WINE_VERSION}"
-PACKAGE_1+="~bullseye-1_${WINE_ARCH}.deb"
-
-PACKAGE_2="wine-${WINE_BRANCH}-${WINE_ARCH}_${WINE_VERSION}"
-PACKAGE_2+="~bullseye-1_${WINE_ARCH}.deb"
+#echo ""
+#echo "Installing Wine ${WINE_BRANCH} ${WINE_VERSION} (${WINE_ARCH}) ..."
+#echo "-----------------------------------------------------------------"
 
 WINE_TMP="/var/tmp/wine-${WINE_VERSION}"
 
-
-sudo dpkg-deb -x "${CACHE}/${PACKAGE_1}" "${WINE_TMP}"
-
-if ! [ "$?" == "0" ];
+if [ "$IN_ANDROID" == "1" ];
 then
-    abort "Failed extracting '${PACKAGE_1}'."
+    PACKAGE_1="wine-${WINE_BRANCH}_${WINE_VERSION}"
+    PACKAGE_1+="~bullseye-1_${WINE_ARCH}.deb"
+
+    PACKAGE_2="wine-${WINE_BRANCH}-${WINE_ARCH}_${WINE_VERSION}"
+    PACKAGE_2+="~bullseye-1_${WINE_ARCH}.deb"
+fi
+
+if ! [ "$USE_CACHED_WINE" == "1" ];
+then
+    "$SCRIPT_DIR/download_wine" $WINE_BRANCH $WINE_VERSION $WINE_ARCH
 fi
 
 
-sudo dpkg-deb -x "${CACHE}/${PACKAGE_2}" "${WINE_TMP}"
+# TODO: HAY QUE REVISAR Y LIMPIAR ESTO
 
-if ! [ "$?" == "0" ];
+if [ "$IN_ANDROID" == "1" ] || [ "$USE_CACHED_WINE" == "1" ];
 then
-    abort "Failed extracting '${PACKAGE_2}'."
+    sudo dpkg-deb -x "${CACHE}/${PACKAGE_1}" "${WINE_TMP}"
+
+    if ! [ "$?" == "0" ];
+    then
+        abort "Failed extracting '${PACKAGE_1}'."
+    fi
+
+
+    sudo dpkg-deb -x "${CACHE}/${PACKAGE_2}" "${WINE_TMP}"
+
+    if ! [ "$?" == "0" ];
+    then
+        abort "Failed extracting '${PACKAGE_2}'."
+    fi
 fi
 
 
