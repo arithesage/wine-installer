@@ -58,7 +58,7 @@ DOWNLOAD_DIR=$4
 DISTRO_VERSION_NAME=$("$SCRIPT_DIR/os_version_name")
 
 
-"$SCRIPT_DIR/check_site"
+source "$SCRIPT_DIR/check_site"
 
 if ! [ "$WINE_URL_OK" == "1" ];
 then

@@ -30,8 +30,11 @@ else
 fi
 
 
-echo "$PACKAGES_ARCH"
-echo ""
+if ! [ "$QUIET" == "1" ];
+then
+    echo "$PACKAGES_ARCH"
+    echo ""
+fi
 
 
 
