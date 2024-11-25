@@ -1,0 +1,29 @@
+#!/bin/bash
+
+function abort
+{
+    REASON=$1
+
+    if [ "$REASON" == "" ];
+    then
+        echo $REASON
+    fi
+
+    echo ""
+    
+    exit 1
+}
+
+
+function usage
+{
+    echo "Usage: install_unpacked_wine <Wine path>"
+    echo ""
+}
+
+
+SCRIPT_DIR=$(realpath $(dirname $0))
+
+
+
+

@@ -33,7 +33,7 @@ function usage
     echo "WARNING! You can download Wine without admin privileges, BUT,"
     echo "you need them for updating APT database and GPG key installing."
     echo ""
-    echo "NOTE: This scripts was made for downloading Wine in ARM machines."
+    echo "NOTE: This script was made for downloading Wine in ARM machines."
     echo "      If you are in x86, use 'apt-install-wine32/64' instead."
     echo ""
 }
