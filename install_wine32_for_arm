@@ -158,8 +158,10 @@ else
     if ! [ -f "${WINE_TMP}/extract" ];
     then
         abort "Can't continue with the install."
-    fi
+    fi    
 fi
+
+"$SCRIPT_DIR/install_unpacked_wine" "${WINE_TMP}"
 
 
 echo ""

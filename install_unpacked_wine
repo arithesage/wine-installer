@@ -25,6 +25,13 @@ function usage
 SCRIPT_DIR=$(realpath $(dirname $0))
 
 
+if [ "$1" == "" ] || [ "$1" == "-h" ] || [ "$1" == "--help" ];
+then
+    usage
+    abort
+fi
+
+
 
 
 WINE_PATH=$1
@@ -38,14 +45,31 @@ then
 fi
 
 
+WINE_OPT="${WINEPATH}/opt"
+WINE_USR="${WINEPATH}/usr"
+
+WINE_FOLDER_REGEX=".*/wine-\(stable\|staging\|devel\)$"
+WINE_PATH=$(find "${WINE_OPT}" -type d -regex "${WINE_FOLDER_REGEX}")
+WINE_DIRNAME=$(basename "$WINE_PATH")
+
+
 echo "Installing Wine..."
 echo "------------------"
 
+cp -r $WINE_OPT /opt/
+
+cp -r $WINE_USR/share/doc/wine-staging /usr/share/doc/
+cp $WINE_USR/share/doc/wine-staging-* /usr/share/doc/
+cp $WINE_USR/share/lintian/overrides/* /usr/share/lintian/overrides/
+
+ln -s /opt/$WINE_DIRNAME/bin/wine /usr/local/bin/wine
+ln -s /opt/$WINE_DIRNAME/bin/wine64 /usr/local/bin/wine64
+ln -s /opt/$WINE_DIRNAME/bin/winecfg /usr/local/bin/winecfg
+ln -s /opt/$WINE_DIRNAME/bin/wineboot /usr/local/bin/wineboot
 
 
-cp -r "$WINE_PATH/opt/wine"
-
-
+echo "Done."
+echo ""
 
 
 
