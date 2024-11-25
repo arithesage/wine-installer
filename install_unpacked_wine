@@ -27,3 +27,29 @@ SCRIPT_DIR=$(realpath $(dirname $0))
 
 
 
+WINE_PATH=$1
+
+
+FIND_RESULT=$(find "${WINE_PATH}/opt" -type f -name "wineboot")
+
+if [ "$FIND_RESULT" == "" ];
+then
+    abort "No Wine installation found at '${WINE_PATH}'."
+fi
+
+
+echo "Installing Wine..."
+echo "------------------"
+
+
+
+cp -r "$WINE_PATH/opt/wine"
+
+
+
+
+
+
+
+
+

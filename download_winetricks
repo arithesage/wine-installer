@@ -1,0 +1,57 @@
+#!/bin/bash
+
+function abort
+{
+    REASON=$1
+
+    if [ "$REASON" == "" ];
+    then
+        echo $REASON
+    fi
+
+    echo ""
+    
+    exit 1
+}
+
+
+SCRIPT_DIR=$(realpath $(dirname $0))
+
+
+
+
+"$SCRIPT_DIR/prepare_apt"
+
+
+WINETRICKS_DOWNLOAD_DIR="/var/tmp/winetricks/"
+
+
+if ! [ -d "$WINETRICKS_DOWNLOAD_DIR" ];
+then
+    mkdir -p "$WINETRICKS_DOWNLOAD_DIR"
+fi
+
+
+cd "$WINETRICKS_DOWNLOAD_DIR"
+
+echo ""
+echo "Downloading Winetricks ..."
+echo "--------------------------"
+
+apt download winetricks
+
+if ! [ "$?" == "0" ];
+then
+    abort "Failed."
+fi
+
+echo "Done."
+echo ""
+
+
+
+
+
+
+
+
