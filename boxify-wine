@@ -39,11 +39,14 @@ then
 fi
 
 
-if [ "$1" == "" ] || [ "$1" == "" ] || [ "$1" == "" ];
+if [ "$1" == "" ] || [ "$1" == "-h" ] || [ "$1" == "--help" ];
 then
     usage
     abort
 fi
+
+
+SCRIPT_DIR=$(realpath $(dirname $0))
 
 
 
@@ -51,39 +54,62 @@ fi
 WINE_PATH=$1
 
 
-if ! [ -f "${WINE_PATH}/bin/wineboot" ];
+if ! [ -f "${WINE_PATH}/.wine_branch" ];
 then
     abort "Wine not detected '$WINE_PATH'."
 fi
 
 
-if [ -f "${WINE_PATH}/bin/wineboot-x86" ];
+WINE_BRANCH=$(cat "$WINE_PATH/.wine_branch")
+WINE_VERSION=$(cat "$WINE_PATH/.wine_version")
+
+WINE_BINARIES="${WINE_PATH}/opt/wine-${WINE_BRANCH}/bin"
+
+
+if [ -f "${WINE_BINARIES}/wineboot-x86" ];
 then
     abort "This Wine installation has been boxified already."
 fi
 
 
-echo "Boxifying Wine installation at ${WINE_PATH} ..."
-echo "-----------------------------------------------"
+if ! [ -f "/usr/local/bin/box86" ];
+then
+    echo "WARNING: Box86 was not found. You can't boxify Wine32 executables."
+fi
+
+if ! [ -f "/usr/local/bin/box64" ];
+then
+    echo "WARNING: Box64 was not found. You can't boxify Wine64 executables."
+fi
+
+if ! [ -f "/usr/local/bin/boxify" ];
+then
+    abort "Can't find boxify."
+fi
+
+
+echo "Located Wine binaries: ${WINE_BINARIES}"
+echo ""
+
+
+echo "Boxifying Wine ${WINE_VERSION} (${WINE_BRANCH}) at ${WINE_PATH} ..."
+echo "-------------------------------------------------------------------"
 
 while IFS= read -r filename;
 do
-    if [ -f "${WINE_PATH}/bin/${filename}" ];
+    if [ -f "${WINE_BINARIES}/${filename}" ];
     then
-        sudo mv "${WINE_PATH}/bin/${filename}" \
-                "${WINE_PATH}/bin/${filename}-x86"
-        
-        sudo boxify "${WINE_PATH}/bin/${filename}"
+        sudo boxify "${WINE_BINARIES}/${filename}"
     fi
-done < $HOME/wine-binaries
+done < "$SCRIPT_DIR/wine-binaries"
 
 
-echo ""
-echo "Updating symlinks ..."
-echo "---------------------" 
+#echo ""
+#echo "Updating symlinks ..."
+#echo "---------------------" 
 
-sudo ln -sf "${WINE_PATH}/bin/winegcc" "${WINE_PATH}/bin/winecpp"
-sudo ln -sf "${WINE_PATH}/bin/winegcc" "${WINE_PATH}/bin/wineg++"
+#sudo ln -sf "${WINE_PATH}/bin/winegcc" "${WINE_PATH}/bin/winecpp"
+#sudo ln -sf "${WINE_PATH}/bin/winegcc" "${WINE_PATH}/bin/wineg++"
 
 
 echo "Done. Execute switch-wine ${WINE_PATH} to use this installation."

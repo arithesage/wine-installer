@@ -195,6 +195,10 @@ then
 fi
 
 
+WINE_BRANCH_FILE="/var/tmp/wine-${WINE_VERSION}/.wine_branch"
+WINE_VERSION_FILE="/var/tmp/wine-${WINE_VERSION}/.wine_version"
+
+
 echo "#!/bin/bash" > "$PWD/extract"
 echo "" >> "$PWD/extract"
 
@@ -202,14 +206,20 @@ echo "echo \"Extracting Wine in /var/tmp/wine-${WINE_VERSION} ...\"" \
       >> "$PWD/extract"
 
 echo "" >> "$PWD/extract"
+
 echo "for package in *.deb;" >> "$PWD/extract"
 echo "do" >> "$PWD/extract"
-
 echo "    dpkg-deb -x \$package /var/tmp/wine-${WINE_VERSION}" \
      >> "$PWD/extract"
-
 echo "done" >> "$PWD/extract"
+
 echo "" >> "$PWD/extract"
+
+echo "echo \"${BRANCH}\" > ${WINE_BRANCH_FILE}" >> "$PWD/extract"
+echo "echo \"${WINE_VERSION}\" > ${WINE_VERSION_FILE}" >> "$PWD/extract"
+
+echo "" >> "$PWD/extract"
+ 
 echo "echo \"\"">> "$PWD/extract"
 echo "echo \"Done.\"" >> "$PWD/extract"
 echo "echo \"\"" >> "$PWD/extract"

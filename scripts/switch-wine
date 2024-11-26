@@ -1,0 +1,85 @@
+#!/bin/bash
+
+function abort
+{
+    REASON=$1
+
+    if [ "$REASON" == "" ];
+    then
+        echo $REASON
+    fi
+
+    echo ""
+    
+    exit 1
+}
+
+
+function usage
+{
+    echo "Usage: switch-wine <Wine path>"
+    echo ""
+    echo "Update the /usr/local/bin symlinks to use another"
+    echo "Wine installation as the default one."
+    echo ""
+}
+
+
+if ! [ "$TERMUX_VERSION" == "" ];
+then
+    abort "This script isn't for Termux."
+fi
+
+
+sudo -v
+
+if ! [ "$?" == "0" ];
+then
+    abort "You need to be root, or have sudo permissions."
+fi
+
+
+if [ "$1" == "" ] || [ "$1" == "--h" ] || [ "$1" == "--help" ];
+then
+    usage
+    abort
+fi
+
+
+SCRIPT_DIR=$(realpath $(dirname $0))
+
+
+
+
+WINE_PATH=$1
+
+
+if ! [ -f "${WINE_PATH}/.wine_branch" ];
+then
+    abort "Wine not detected '$WINE_PATH'."
+fi
+
+
+WINE_BRANCH=$(cat "$WINE_PATH/.wine_branch")
+WINE_VERSION=$(cat "$WINE_PATH/.wine_version")
+
+WINE_BINARIES="${WINE_PATH}/opt/wine-${WINE_BRANCH}/bin"
+
+
+
+sudo ln -sf "${WINE_BINARIES}/wine" /usr/local/bin/wine
+
+if [ -f "${WINE_BINARIES}/wine64" ];
+then
+    sudo ln -sf "${WINE_BINARIES}/wine64" /usr/local/bin/wine64
+fi
+
+sudo ln -sf "${WINE_BINARIES}/wineboot" /usr/local/bin/wineboot
+sudo ln -sf "${WINE_BINARIES}/winecfg" /usr/local/bin/winecfg
+
+
+echo "The Wine ${WINE_VERSION} (${WINE_BRANCH}) installation"
+echo "located at ${WINE_PATH} is now the default one."
+echo ""
+
+
