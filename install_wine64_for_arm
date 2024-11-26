@@ -17,7 +17,7 @@ function abort
 
 function usage
 {
-    echo "Usage: install_wine32_for_arm [branch] [version]"
+    echo "Usage: install_wine64_for_arm [branch] [version]"
     echo ""
     echo "Branch is one of stable, staging or devel."
     echo "Default branch: staging"
@@ -38,16 +38,16 @@ then
 fi
 
 
-WINE_ARCH="i386"
+WINE_ARCH="amd64"
 WINE_BRANCH=$1
 WINE_VERSION=$2
 
 
 source "$SCRIPT_DIR/packages_arch" --quiet
 
-if ! [ "$PACKAGES_ARCH" == "armhf" ] && ! [ "$PACKAGES_ARCH" == "arm64" ];
+if ! [ "$PACKAGES_ARCH" == "arm64" ];
 then
-    abort "This script isn't intended for x86 machines."
+    abort "This script is only for ARM64 machines."
 fi
 
 
@@ -84,7 +84,7 @@ then
 fi
 
 
-"$SCRIPT_DIR/install_deps_for_armhf"
+"$SCRIPT_DIR/install_deps_for_arm64"
 
 
 if [ "$IN_ANDROID" == "1" ];
