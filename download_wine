@@ -198,30 +198,68 @@ fi
 WINE_BRANCH_FILE="/var/tmp/wine-${WINE_VERSION}/.wine_branch"
 WINE_VERSION_FILE="/var/tmp/wine-${WINE_VERSION}/.wine_version"
 
+WINE32_DIR="wine-${WINE_VERSION}_i386"
+WINE64_DIR="wine-${WINE_VERSION}_amd64"
+
 
 echo "#!/bin/bash" > "$PWD/extract"
-echo "" >> "$PWD/extract"
-
-echo "echo \"Extracting Wine in /var/tmp/wine-${WINE_VERSION} ...\"" \
-      >> "$PWD/extract"
 
 echo "" >> "$PWD/extract"
 
-echo "for package in *.deb;" >> "$PWD/extract"
-echo "do" >> "$PWD/extract"
-echo "    dpkg-deb -x \$package /var/tmp/wine-${WINE_VERSION}" \
-     >> "$PWD/extract"
-echo "done" >> "$PWD/extract"
+if [ "$ARCH" == "i386" ] || [ "$ARCH" == "both" ];
+then
+    echo "echo \"\"" >> "$PWD/extract"
+    echo "echo \"Extracting Wine (i386) in /var/tmp/${WINE32_DIR} ...\"" \
+        >> "$PWD/extract"
+
+    echo "" >> "$PWD/extract"
+
+    echo "for package in \$(ls *_i386.deb);" >> "$PWD/extract"
+    echo "do" >> "$PWD/extract"
+    echo "    dpkg-deb -x \$package /var/tmp/${WINE32_DIR}" \
+        >> "$PWD/extract"
+    echo "done" >> "$PWD/extract"
+
+    echo "echo \"${BRANCH}\" > /var/tmp/${WINE32_DIR}/.wine_branch" \
+          >> "$PWD/extract"
+    
+    echo "echo \"${WINE_VERSION}\" > /var/tmp/${WINE32_DIR}/.wine_version" \
+          >> "$PWD/extract"
+
+    echo "echo \"\"">> "$PWD/extract"
+    echo "echo \"Done.\"" >> "$PWD/extract"
+fi
 
 echo "" >> "$PWD/extract"
 
-echo "echo \"${BRANCH}\" > ${WINE_BRANCH_FILE}" >> "$PWD/extract"
-echo "echo \"${WINE_VERSION}\" > ${WINE_VERSION_FILE}" >> "$PWD/extract"
+if [ "$ARCH" == "amd64" ] || [ "$ARCH" == "both" ];
+then
+    echo "echo \"\"" >> "$PWD/extract"
+    echo "echo \"Extracting Wine (amd64) in /var/tmp/${WINE64_DIR} ...\"" \
+        >> "$PWD/extract"
+
+    echo "" >> "$PWD/extract"
+
+    echo "for package in \$(ls *_amd64.deb);" >> "$PWD/extract"
+    echo "do" >> "$PWD/extract"
+    echo "    dpkg-deb -x \$package /var/tmp/${WINE64_DIR}" \
+        >> "$PWD/extract"
+    echo "done" >> "$PWD/extract"
+
+    echo "echo \"${BRANCH}\" > /var/tmp/${WINE64_DIR}/.wine_branch" \
+          >> "$PWD/extract"
+    
+    echo "echo \"${WINE_VERSION}\" > /var/tmp/${WINE64_DIR}/.wine_version" \
+          >> "$PWD/extract"
+
+    echo "echo \"\"">> "$PWD/extract"
+    echo "echo \"Done.\"" >> "$PWD/extract"
+fi
 
 echo "" >> "$PWD/extract"
  
 echo "echo \"\"">> "$PWD/extract"
-echo "echo \"Done.\"" >> "$PWD/extract"
+echo "echo \"Finished.\"" >> "$PWD/extract"
 echo "echo \"\"" >> "$PWD/extract"
 
 chmod +x "$PWD/extract"

@@ -1,0 +1,56 @@
+#!/bin/bash
+
+function abort
+{
+    REASON=$1
+
+    if [ "$REASON" == "" ];
+    then
+        echo $REASON
+    fi
+
+    echo ""
+    
+    exit 1
+}
+
+
+function usage
+{
+
+}
+
+
+if [ "$1" == "" ] || [ "$1" == "-h" ] || [ "$1" == "--help" ];
+then
+    usage
+    abort
+fi
+
+
+SCRIPT_DIR=$(realpath $(dirname $0))
+
+
+
+
+EXEC=$1
+ARGS=${@:2}
+
+EXEC_TYPE=$("$SCRIPT_DIR/exec_type" "$EXEC")
+
+
+if [ "$EXEC_TYPE" == "windows-i386" ];
+then
+    echo "Windows 32 bit binary detected."
+    echo "Executing '$EXEC' $ARGS with Wine ..."
+    echo ""
+
+elif [ "$EXEC_TYPE" == "windows-amd64" ];
+then
+    echo "Windows 64 bit binary detected."
+    echo "Executing '$EXEC' $ARGS with Wine64 ..."
+    echo ""
+fi
+
+
+
