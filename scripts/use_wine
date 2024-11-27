@@ -1,19 +1,5 @@
 #!/bin/bash
 
-function abort
-{
-    REASON=$1
-
-    if [ "$REASON" == "" ];
-    then
-        echo $REASON
-    fi
-
-    echo ""
-    
-    exit 1
-}
-
 
 function usage
 {
@@ -27,7 +13,7 @@ function usage
     echo "- WINESERVER: Points to the wineserver executable."
     echo "- WINEDEBUG: Disables the 'fixme' messages."
     echo ""
-    echo "- wine, winecfg, wineboot: Aliases for these commands."
+    echo "- wine, winecfg, wineboot, winefile: Aliases for these commands."
     echo ""
 }
 
@@ -35,52 +21,51 @@ function usage
 if [ "$1" == "" ] || [ "$1" == "-h" ] || [ "$1" == "--help" ];
 then
     usage
-    abort
-fi
 
-
-
-
-if ! [ "$TERMUX_VERSION" == "" ];
-then
-    abort "This script isn't for Termux."
-fi
-
-
-export WINE_PATH=$1
-
-
-if ! [ -f "${WINE_PATH}/.wine_branch" ];
-then
-    abort "No Wine installation found at '$WINE_PATH'."
-fi
-
-
-WINE_BRANCH=$(cat "$WINE_PATH/.wine_branch")
-WINE_VERSION=$(cat "$WINE_PATH/.wine_version")
-
-WINE_BINARIES="${WINE_PATH}/opt/wine-${WINE_BRANCH}/bin"
-
-
-if [ -f "${WINEBINARIES}/wine64" ];
-then
-    export WINELOADER="${WINE_BINARIES}/wine64"
-    export WINEARCH=win64
 else
-    export WINELOADER="${WINE_BINARIES}/wine"
-    export WINEARCH=win32
+    if ! [ "$TERMUX_VERSION" == "" ];
+    then
+        echo "This script isn't for Termux."
+        echo ""
+
+    else
+        export WINE_PATH=$1
+
+
+        if ! [ -f "${WINE_PATH}/.wine_branch" ];
+        then
+            echo "No Wine installation found at '$WINE_PATH'."
+            echo ""
+
+        else
+            WINE_BRANCH=$(cat "$WINE_PATH/.wine_branch")
+            WINE_VERSION=$(cat "$WINE_PATH/.wine_version")
+
+            WINE_BINARIES="${WINE_PATH}/opt/wine-${WINE_BRANCH}/bin"
+
+            if [ -f "${WINE_BINARIES}/wine64" ];
+            then
+                export WINELOADER="${WINE_BINARIES}/wine64"
+                export WINEARCH=win64
+            else
+                export WINELOADER="${WINE_BINARIES}/wine"
+                export WINEARCH=win32
+            fi
+
+            export WINESERVER="${WINE_BINARIES}/wineserver"
+            export WINEDEBUG=-all
+
+            alias wine="${WINELOADER}"            
+            alias wineboot="${WINE_BINARIES}/wineboot"
+            alias winecfg="${WINE_BINARIES}/winecfg"
+            #alias winefile="${WINE_PATH}/opt/wine-${WINE_BRANCH}/lib"
+
+            echo "Using Wine (${WINEARCH}) ${WINE_BRANCH} (${WINE_VERSION}) 
+                  installation at '${WINE_PATH}'."
+
+            echo ""
+        fi
+    fi
 fi
-
-export WINESERVER="${WINEBINARIES}/wineserver"
-export WINEDEBUG=-all
-
-alias wine='${WINELOADER}'
-alias winecfg='${WINEBINARIES}/winecfg'
-alias wineboot='${WINEBINARIES}/wineboot'
-
-echo "Using Wine (${WINEARCH}) ${WINE_BRANCH} (${WINE_VERSION}) \ 
-      installation at '${WINE_PATH}'."
-
-echo ""
 
 
