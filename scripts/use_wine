@@ -8,12 +8,18 @@ function usage
     echo "Activates one Wine installation for use."
     echo ""
     echo "Basically, sets some environment variables and aliases:"
+    echo ""
+    echo "Environment variables:"
+    echo "======================"
     echo "- WINE_PATH: Points to the Wine installation in use."
     echo "- WINELOADER: Points to the Wine executable."
     echo "- WINESERVER: Points to the wineserver executable."
     echo "- WINEDEBUG: Disables the 'fixme' messages."
     echo ""
-    echo "- wine, winecfg, wineboot, winefile: Aliases for these commands."
+    echo "Aliases:"
+    echo "========"
+    echo "- wine, winecfg, wineboot, winefile."
+    echo ""
     echo ""
 }
 
@@ -38,10 +44,18 @@ else
             echo ""
 
         else
+            WINE_ARCH=$(cat "$WINE_PATH/.wine_arch")
             WINE_BRANCH=$(cat "$WINE_PATH/.wine_branch")
             WINE_VERSION=$(cat "$WINE_PATH/.wine_version")
 
             WINE_BINARIES="${WINE_PATH}/opt/wine-${WINE_BRANCH}/bin"
+
+            WINE_UTILS="${WINE_PATH}/opt/wine-${WINE_BRANCH}"
+            
+            if [ "$WINE_ARCH" == "i386" ];
+            then
+                WINE_UTILS+="/lib"
+            fi
 
             if [ -f "${WINE_BINARIES}/wine64" ];
             then
@@ -58,7 +72,7 @@ else
             alias wine="${WINELOADER}"            
             alias wineboot="${WINE_BINARIES}/wineboot"
             alias winecfg="${WINE_BINARIES}/winecfg"
-            #alias winefile="${WINE_PATH}/opt/wine-${WINE_BRANCH}/lib"
+            alias winefile="wine ${WINE_UTILS}/winefile.exe"
 
             echo "Using Wine (${WINEARCH}) ${WINE_BRANCH} (${WINE_VERSION}) 
                   installation at '${WINE_PATH}'."
