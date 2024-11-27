@@ -52,7 +52,7 @@ export WINE_PATH=$1
 
 if ! [ -f "${WINE_PATH}/.wine_branch" ];
 then
-    abort "Wine not detected '$WINE_PATH'."
+    abort "No Wine installation found at '$WINE_PATH'."
 fi
 
 
