@@ -272,10 +272,10 @@ echo "echo \"\"" >> "$PWD/extract"
 chmod +x "$PWD/extract"
 
 
-if ! [ -f "/usr/local/bin/use_wine" ];
+if ! [ -f "/usr/local/share/wine/use_wine" ];
 then
-    sudo cp -f "$SCRIPT_DIR/scripts/use_wine" /usr/local/bin/
-    sudo cp -f "$SCRIPT_DIR/scripts/exec_type" /usr/local/bin/
+    sudo cp -f "$SCRIPT_DIR/scripts/use_wine" /usr/local/share/wine/
+    sudo cp -f "$SCRIPT_DIR/scripts/exec_type" /usr/local/share/wine/
 fi
 
 

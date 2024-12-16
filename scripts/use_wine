@@ -54,7 +54,9 @@ else
             
             if [ "$WINE_ARCH" == "i386" ];
             then
-                WINE_UTILS+="/lib"
+                WINE_UTILS+="/lib/wine/i386-windows"
+            else
+                WINE_UTILS+="/lib64/wine/x86_64-windows"
             fi
 
             if [ -f "${WINE_BINARIES}/wine64" ];
@@ -70,13 +72,13 @@ else
             export WINEDEBUG=-all
 
             alias wine="${WINELOADER}"            
-            alias wineboot="${WINE_BINARIES}/wineboot"
-            alias winecfg="${WINE_BINARIES}/winecfg"
+            alias wineboot="wine ${WINE_UTILS}/wineboot.exe"
+            alias winecfg="wine ${WINE_UTILS}/winecfg.exe"
             alias winefile="wine ${WINE_UTILS}/winefile.exe"
 
-            echo "Using Wine (${WINEARCH}) ${WINE_BRANCH} (${WINE_VERSION}) 
-                  installation at '${WINE_PATH}'."
 
+            echo -n "Using Wine (${WINEARCH}) ${WINE_BRANCH} (${WINE_VERSION}) "
+            echo "installation at '${WINE_PATH}'."
             echo ""
         fi
     fi
