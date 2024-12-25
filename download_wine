@@ -276,28 +276,28 @@ if ! [ -f "/usr/local/bin/wine/use_wine" ];
 then
     if ! [ -d "/usr/local/bin/wine" ];
     then
-        mkdir -p "/usr/local/bin/wine"
+        sudo mkdir -p "/usr/local/bin/wine"
     fi
 
     sudo cp -f "$SCRIPT_DIR/scripts/use_wine" "/usr/local/bin/wine/"
     sudo cp -f "$SCRIPT_DIR/scripts/exec_type" "/usr/local/bin/wine/"
 
-    ln -sf "$SCRIPT_DIR/scripts/wine/use_wine" "/usr/local/bin/use_wine"
+    sudo ln -sf "/usr/local/bin/wine/use_wine" "/usr/local/bin/use_wine"
 fi
 
 
 if ! [ -f "/usr/local/bin/wine/winecmds/win_prepare" ];
 then
-    cp -rf "$SCRIPT_DIR/scripts/winecmds" "/usr/local/bin/wine/"
+    sudo cp -rf "$SCRIPT_DIR/scripts/winecmds" "/usr/local/bin/wine/"
 fi
 
 
 if ! [ -f "/usr/local/bin/win_prepare" ];
 then
-    ln -sf "$SCRIPT_DIR/scripts/winecmds/win_prepare" "/usr/local/bin/win_prepare"
-    ln -sf "$SCRIPT_DIR/scripts/winecmds/win_help" "/usr/local/bin/win_help"
-    ln -sf "$SCRIPT_DIR/scripts/winecmds/wincd_load" "/usr/local/bin/wincd_load"
-    ln -sf "$SCRIPT_DIR/scripts/winecmds/wincd_eject" "/usr/local/bin/wincd_eject"
+    sudo ln -sf "/usr/local/bin/wine/winecmds/win_prepare" "/usr/local/bin/win_prepare"
+    sudo ln -sf "/usr/local/bin/wine/winecmds/win_help" "/usr/local/bin/win_help"
+    sudo ln -sf "/usr/local/bin/wine/winecmds/wincd_load" "/usr/local/bin/wincd_load"
+    sudo ln -sf "/usr/local/bin/wine/winecmds/wincd_eject" "/usr/local/bin/wincd_eject"
 fi
 
 
