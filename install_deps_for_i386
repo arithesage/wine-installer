@@ -32,10 +32,20 @@ fi
 
 ARCH=$(uname -m)
 
-if ! [ "$ARCH" == "i386" ] || [ "$ARCH" == "x86_64" ];
+if ! [ "$ARCH" == "i386" ] && ! [ "$ARCH" == "x86_64" ];
 then
     abort "You need a x86 (32 or 64 bits) to run this script."
 fi
+
+
+sudo dpkg --add-architecture i386
+
+echo "Added i386 architecture to dpkg if wasn't available yet."
+echo ""
+
+echo "Refreshing available packages ..."
+echo "---------------------------------"
+sudo apt update
 
 
 if ! [ -f "/usr/lib/i386-linux-gnu/libvkd3d.so.1" ];
@@ -44,21 +54,21 @@ then
     echo "Installing dependencies for Wine (32 bits) ..."
     echo "----------------------------------------------"
 
-    WINE_DEPS="libasound2:i386 libavcodec59:i386 libavformat59:i386"
-    WINE_DEPS+="libavutil57:i386 libc6:i386 libglib2.0-0:i386 libgphoto2-6:i386"
-    WINE_DEPS+="libgphoto2-port12:i386 libgstreamer-plugins-base1.0-0:i386"
-    WINE_DEPS+="libgstreamer1.0-0:i386 libpcap0.8:i386 libpcsclite1:i386"
-    WINE_DEPS+="libpulse0:i386 libsane1:i386 libudev1:i386 libusb-1.0-0:i386"
-    WINE_DEPS+="libwayland-client0:i386 libwayland-egl1:i386 libx11-6:i386"
-    WINE_DEPS+="libxext6:i386 libxkbcommon0:i386 libxkbregistry0:i386"
-    WINE_DEPS+="ocl-icd-libopencl1:i386 libasound2-plugins:i386 libncurses6:i386"
-    WINE_DEPS+="libncurses5:i386 libcairo2:i386 libcap2-bin:i386 libcups2:i386"
-    WINE_DEPS+="libdbus-1-3:i386 libfontconfig1:i386 libfreetype6:i386"
-    WINE_DEPS+="libglu1-mesa:i386 libgnutls30:i386 libgssapi-krb5-2:i386"
-    WINE_DEPS+="libgtk-3-0:i386 libkrb5-3:i386 libodbc2:i386 libodbc1:i386"
-    WINE_DEPS+="libosmesa6:i386 libsdl2-2.0-0:i386 libv4l-0:i386 libva-drm2:i386"
-    WINE_DEPS+="libva-x11-2:i386 libva2:i386 libxcomposite1:i386 libxcursor1:i386"
-    WINE_DEPS+="libxfixes3:i386 libxi6:i386 libxinerama1:i386 libxrandr2:i386"
+    WINE_DEPS="libasound2:i386 libavcodec59:i386 libavformat59:i386 "
+    WINE_DEPS+="libavutil57:i386 libc6:i386 libglib2.0-0:i386 libgphoto2-6:i386 "
+    WINE_DEPS+="libgphoto2-port12:i386 libgstreamer-plugins-base1.0-0:i386 "
+    WINE_DEPS+="libgstreamer1.0-0:i386 libpcap0.8:i386 libpcsclite1:i386 "
+    WINE_DEPS+="libpulse0:i386 libsane1:i386 libudev1:i386 libusb-1.0-0:i386 "
+    WINE_DEPS+="libwayland-client0:i386 libwayland-egl1:i386 libx11-6:i386 "
+    WINE_DEPS+="libxext6:i386 libxkbcommon0:i386 libxkbregistry0:i386 "
+    WINE_DEPS+="ocl-icd-libopencl1:i386 libasound2-plugins:i386 libncurses6:i386 "
+    WINE_DEPS+="libncurses5:i386 libcairo2:i386 libcap2-bin:i386 libcups2:i386 "
+    WINE_DEPS+="libdbus-1-3:i386 libfontconfig1:i386 libfreetype6:i386 "
+    WINE_DEPS+="libglu1-mesa:i386 libgnutls30:i386 libgssapi-krb5-2:i386 "
+    WINE_DEPS+="libgtk-3-0:i386 libkrb5-3:i386 libodbc2:i386 libodbc1:i386 "
+    WINE_DEPS+="libosmesa6:i386 libsdl2-2.0-0:i386 libv4l-0:i386 libva-drm2:i386 "
+    WINE_DEPS+="libva-x11-2:i386 libva2:i386 libxcomposite1:i386 libxcursor1:i386 "
+    WINE_DEPS+="libxfixes3:i386 libxi6:i386 libxinerama1:i386 libxrandr2:i386 "
     WINE_DEPS+="libxrender1:i386 libxxf86vm1:i386"
 
     sudo apt install -y $WINE_DEPS

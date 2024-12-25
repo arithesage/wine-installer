@@ -32,7 +32,7 @@ fi
 
 ARCH=$(uname -m)
 
-if ! [[ $ARCH == armv* ]] || [ "$ARCH" == "aarch64" ];
+if ! [[ $ARCH == armv* ]] && ! [ "$ARCH" == "aarch64" ];
 then
     abort "You need a ARMv7 or ARM64 device for running this script."
 fi
