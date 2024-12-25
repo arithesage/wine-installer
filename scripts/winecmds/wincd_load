@@ -1,21 +1,61 @@
 #!/bin/bash
 
-if [ "$WIN_D" == "" ];
-then
-    echo "No WINE prefix loaded."
-    echo "Call win_load <prefix name> [win32|win64]"
-    echo "Set WIN_ROOT if need to use a different path as prefixes root."
+function abort
+{
+    REASON=$1
+
+    if ! [ "$REASON" == "" ];
+    then
+        echo "$REASON"
+    fi
+
     echo ""
+
     exit 1
-fi
+}
+
 
 function usage
 {
     echo "wincd_load <iso path>"
     echo "Loads the given ISO in the prefix's D drive."
     echo ""
-    exit 1
+    
+    abort
 }
+
+
+
+
+if ! [ "$TERMUX_VERSION" == "" ];
+then
+    abort "This script isn't for Termux."
+fi
+
+
+if ! [ -f "/usr/bin/fuseiso" ];
+then
+    echo "Installing fuseiso ..."
+    echo "----------------------"
+
+    sudo apt install -y fuseiso
+fi
+
+if ! [ "$?" == "0" ];
+then
+    abort "Failed."
+fi
+
+
+if [ "$WIN_D" == "" ];
+then
+    echo "No WINE prefix loaded."
+    echo "Call win_load <prefix name> [win32|win64]"
+    echo "Set WIN_ROOT if need to use a different path as prefixes root."
+    echo ""
+
+    abort
+fi
 
 
 if ! [ -d "$WIN_D" ];
@@ -24,18 +64,18 @@ then
     ln -s "$WINEPREFIX/drive_d" "$WINEPREFIX/dosdevices/d:"
 fi
 
+
 ISO=$1
 
 if ! [ -f "$ISO" ];
 then
-    echo "ERROR: Cannot access '$ISO'."
-    echo ""
-    exit 1
+    abort "ERROR: Cannot access '$ISO'."
 fi
 
-dir_empty "$WIN_D"
 
-if [ "$?" == "1" ];
+WIN_D_CONTENTS=$(ls -A "$WIN_D")
+
+if ! [ "$WIN_D_CONTENTS" == "" ];
 then
     echo "There is a CD already loaded."
     echo "Ejecting it first..."
@@ -44,21 +84,20 @@ then
 
     if [ "$?" == "1" ];
     then
-	echo "Failed!"
-	echo ""
-	exit 1
+	    abort "Failed!"
     fi
 fi
 
+
 fuseiso "$ISO" "$WIN_D"
+
 
 if ! [ "$?" == "0" ];
 then
     echo "Failed loading ISO."
-    echo "If trying to load a .CUE/BIN image, load the .BIN part, not .CUE."
-    echo ""
-    exit 1
+    abort "If trying to load a .CUE/BIN image, load the .BIN part, not .CUE."
 fi
+
 
 echo "ISO loaded at '$WIN_D'."
 echo ""
