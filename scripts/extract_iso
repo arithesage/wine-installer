@@ -1,0 +1,116 @@
+#!/bin/bash
+
+function abort
+{
+    REASON=$1
+
+    if [ "$REASON" == "" ];
+    then
+        echo $REASON
+    fi
+
+    echo ""
+    
+    exit 1
+}
+
+
+function usage
+{
+
+}
+
+
+if [ "$1" == "" ] || [ "$1" == "-h" ] || [ "$1" == "--help" ];
+then
+    usage
+    abort
+fi
+
+
+
+
+ISO=$1
+EXTRACT_PATH=$2
+
+
+if ! [ -f "$ISO" ];
+then
+    abort "Can't find ISO file '$ISO'."
+fi
+
+
+ISO_FILENAME=$(basename "$ISO")
+ISO_PATH=$(realpath $(dirname "$ISO"))
+
+if [ -f "$ISO_PATH/.${ISO_FILENAME}_mp" ];
+then
+    echo "ISO is already available at '$(cat $ISO_PATH/.${ISO_FILENAME}_mp)'"
+    echo ""
+
+    exit 0
+fi
+
+
+if ! [ -f "/usr/bin/7zz" ];
+then
+    abort "Can't find 7zz. Install 7zip first."
+fi
+
+
+if ! [ -f "/usr/bin/isoinfo" ];
+then
+    echo "Cannot find isoinfo. Will use the ISO filename for the folder."
+
+    DISC_NAME=${ISO_FILENAME:0:-4}
+
+else
+    DISC_NAME=$(isoinfo -i Gruntz.iso -d | grep "Volume id:" | cut -d " " -f 3)
+fi
+
+
+if ! [ -f "$EXTRACT_PATH" ];
+then
+    mkdir -p "$EXTRACT_PATH"
+
+    if ! [ "$?" == "0" ];
+    then
+        abort "Cannot create dir '$EXTRACT_PATH'."
+    fi
+fi
+
+
+EXTRACT_PATH="$EXTRACT_PATH/$DISC_NAME"
+
+
+echo "Extracting '$ISO' to '$EXTRACT_PATH' ..."
+echo "---------------------------------------------------"
+
+cd "$EXTRACT_PATH"
+
+7zz x "$ISO"
+
+
+if ! [ "$?" == "0" ];
+then
+    abort "Failed."
+fi
+
+
+echo "$EXTRACT_PATH" > "$ISO_PATH/.${ISO_FILENAME}_mp"
+
+
+echo "Done."
+echo ""
+
+
+
+
+
+
+
+
+
+
+
+
