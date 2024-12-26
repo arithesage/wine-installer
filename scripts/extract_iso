@@ -4,7 +4,7 @@ function abort
 {
     REASON=$1
 
-    if [ "$REASON" == "" ];
+    if ! [ "$REASON" == "" ];
     then
         echo $REASON
     fi
@@ -17,7 +17,8 @@ function abort
 
 function usage
 {
-
+    echo "Usage: extract_iso <ISO path> <extract path>"
+    echo ""
 }
 
 
@@ -65,8 +66,19 @@ then
     DISC_NAME=${ISO_FILENAME:0:-4}
 
 else
-    DISC_NAME=$(isoinfo -i Gruntz.iso -d | grep "Volume id:" | cut -d " " -f 3)
+    DISC_NAME=$(isoinfo -i $ISO -d | grep "Volume id:" | cut -d " " -f 3)
+
+    if ! [ "$?" == "0" ];
+    then
+        echo "Failed obtaining ISO volume name."
+        echo "Falling back to ISO filename."
+        
+        DISC_NAME=${ISO_FILENAME:0:-4}
+    fi
 fi
+
+
+EXTRACT_PATH="$EXTRACT_PATH/$DISC_NAME"
 
 
 if ! [ -f "$EXTRACT_PATH" ];
@@ -80,9 +92,7 @@ then
 fi
 
 
-EXTRACT_PATH="$EXTRACT_PATH/$DISC_NAME"
-
-
+echo ""
 echo "Extracting '$ISO' to '$EXTRACT_PATH' ..."
 echo "---------------------------------------------------"
 

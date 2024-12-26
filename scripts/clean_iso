@@ -1,0 +1,74 @@
+#!/bin/bash
+
+function abort
+{
+    REASON=$1
+
+    if ! [ "$REASON" == "" ];
+    then
+        echo $REASON
+    fi
+
+    echo ""
+    
+    exit 1
+}
+
+
+function usage
+{
+    echo "Usage: clean_iso <ISO path>"
+    echo ""
+    echo "If used with an ISO file that was extracted using extract_iso,"
+    echo "it will clear the 'mount point' contents and delete control file."
+    echo ""
+}
+
+
+if [ "$1" == "" ] || [ "$1" == "-h" ] || [ "$1" == "--help" ];
+then
+    usage
+    abort
+fi
+
+
+
+
+ISO=$1
+
+
+if ! [ -f "$ISO" ];
+then
+    abort "Can't find ISO file '$ISO'."
+fi
+
+
+ISO_FILENAME=$(basename "$ISO")
+ISO_PATH=$(realpath $(dirname "$ISO"))
+
+
+if ! [ -f "$ISO_PATH/.${ISO_FILENAME}_mp" ];
+then
+    echo "Cannot find '.${ISO_FILENAME}_mp' file."
+    abort "Unable to clean extracted ISO."
+fi
+
+
+EXTRACTED_ISO_PATH=$(cat "$ISO_PATH/.${ISO_FILENAME}_mp")
+
+
+echo "Cleaning extracted ISO ..."
+
+rm -r "$EXTRACTED_ISO_PATH"
+
+if ! [ "$?" == "0" ];
+then
+    abort "Failed."
+fi
+
+
+rm "$ISO_PATH/.${ISO_FILENAME}_mp"
+
+echo "Done."
+
+
