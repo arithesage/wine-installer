@@ -1,8 +1,46 @@
 #!/bin/bash
 
+function abort
+{
+    REASON=$1
+
+    if [ "$REASON" == "" ];
+    then
+        echo $REASON
+    fi
+
+    echo ""
+    
+    exit 1
+}
+
+
+function setup_prefix
+{
+    WINEPREFIX=$1
+    WINEARCH=$2
+
+    echo "Initializing prefix '$WINEPREFIX' with archtecture $WINEARCH..."
+    wineboot
+
+    if ! [ "$?" == "0" ];
+    then
+        echo "Initialization failed. Maybe a permissions problem."
+        abort "Do chmod -R 770 in '$1' and try again."
+    fi
+
+    install_activator $WINEPREFIX $WINEARCH
+
+    echo "Initialization done."
+    echo ""
+}
+
+
 function usage
 {
     echo "Usage: win_prepare <prefix name> [win32|win64]"
+    echo ""
+    echo "Setups a new Wine prefix."
     echo ""
     echo "All WINE prefixes goes in ~/.local/share/wineprefixes by default."
     echo "To use another location, set it in WIN_ROOT environment variable."
@@ -14,68 +52,16 @@ function usage
 }
 
 
-function setup_prefix
-{
-    export WINEPREFIX=$PREFIXES_ROOT/$PREFIX_NAME
-    export WINEARCH=$ARCH
-
-    echo "Initializing prefix '$WINEPREFIX' with archtecture $WINEARCH..."
-    wineboot
-
-    if ! [ "$?" == "0" ];
-    then
-        echo "Initialization failed. Maybe a permissions problem."
-        echo "Do chmod -R 770 in '$1' and try again."
-        echo ""
-        exit 1
-    fi
-
-    install_activator #$WINEPREFIX $WINEARCH
-
-    echo "Initialization done."
-    echo ""
-}
-
-
-function install_activator
-{
-    WINEPREFIX=$PREFIXES_ROOT/$PREFIX_NAME
-    WINEARCH=$ARCH
-
-    ACTIVATOR=$WINEPREFIX/activate
-
-    echo "export WINEPREFIX=\"$WINEPREFIX\"" > "$ACTIVATOR"
-    echo "export WINEARCH=$WINEARCH" >> "$ACTIVATOR"
-    echo "export WIN_C=\"$WINEPREFIX/drive_c\"" >> "$ACTIVATOR"
-    echo "export WIN_D=\"$WINEPREFIX/drive_d\"" >> "$ACTIVATOR"
-    echo "export WINEDEBUG=-all" >> "$ACTIVATOR"
-    echo "echo \"WINE prefix '$WINEPREFIX' activated.\"" >> "$ACTIVATOR"
-    echo "echo \"\"" >> "$ACTIVATOR"
-}
-
-
-function finish
-{
-    echo ""
-    echo "For using the new WINE prefix, do '. $PREFIXES_ROOT/$PREFIX_NAME/activate'"
-    echo "or 'source $PREFIXES_ROOT/$PREFIX_NAME/activate'."
-    echo ""
-    echo "Execute win_help for more details."
-    echo ""
-    echo "Happy windowing!"
-    echo ""
-}
-
-
-
-
 if [ "$1" == "" ] || [ "$1" == "-h" ] || [ "$1" == "--h" ];
 then
     usage
     exit 1
 fi
 
-export PREFIX_NAME=$1
+
+
+
+PREFIX_NAME=$1
 
 
 if ! [ "$WIN_ROOT" == "" ] && [ -d "$WIN_ROOT" ];
@@ -86,9 +72,7 @@ then
 
     if ! [ "$?" == "0" ];
     then
-        echo "ERROR: Cannot write in '$PREFIXES_ROOT'"
-	echo ""
-	exit 1
+        abort "ERROR: Cannot write in '$PREFIXES_ROOT'"
     else
         rm "$PREFIXES_ROOT/touched"
     fi
@@ -101,46 +85,6 @@ echo "Using '$PREFIXES_ROOT' as prefixes root."
 
 if [ -d "$PREFIXES_ROOT/$PREFIX_NAME/dosdevices" ];
 then
-    echo "There is already a WINE prefix named '$PREFIX_NAME' here."
-
-    if [ -d "$PREFIXES_ROOT/$PREFIX_NAME/drive_c/Program Files (x86)" ];
-    then
-        echo "It seems a win64 prefix."
-        export ARCH=win64
-    else
-        echo "It seems a win32 prefix."
-        export ARCH=win32
-    fi
-
-    if ! [ -f "$PREFIXES_ROOT/$PREFIX_NAME/activate" ];
-    then
-        echo "No activator found. One new will be generated."
-        install_activator #$PREFIXES_ROOT/$PREFIX_NAME $ARCH
-    else
-        echo "An activator already exists here."
-        echo ""
-    fi
-
-    finish
-    exit 0
+    abort "There is already a WINE prefix named '$PREFIX_NAME' here."
 fi
-
-
-if [ "$2" == "" ];
-then
-    echo "No architecture selected. Using win32."
-    export ARCH=win32
-
-elif ! [ "$2" == "win32" ] && ! [ "$2" == "win64" ];
-then
-    echo "Invalid architecture '$2'. Must be win32 or win64."
-    echo ""
-    exit 1
-else
-    export ARCH=$2
-fi
-
-setup_prefix #$PREFIXES_ROOT $PREFIX_NAME $ARCH
-
-finish
 
