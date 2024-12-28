@@ -12,6 +12,13 @@ function usage
     echo "Environment variables:"
     echo "======================"
     echo "- WINE_PATH: Points to the Wine installation in use."
+    echo ""
+    echo "- BOX{ARCH}_LD_LIBRARY_PATH: Points where Wine Linux libs reside."
+    echo "                             'lib{ARCH}/wine/{ARCH}-unix'"
+    echo ""
+    echo "- WINEDLLPATH: Points to the 'lib{ARCH}/wine/{ARCH}-windows'"
+    echo "               folder where the Windows DLLs Wine needs reside."
+    echo ""
     echo "- WINELOADER: Points to the Wine executable."
     echo "- WINESERVER: Points to the wineserver executable."
     echo "- WINEDEBUG: Disables the 'fixme' messages."
@@ -20,6 +27,8 @@ function usage
     echo "========"
     echo "- wine, winecfg, wineboot, winefile."
     echo ""
+    echo "The environment variables related to Box86/64 are only set if"
+    echo "box86/64 are found in PATH."
     echo ""
 }
 
@@ -61,17 +70,52 @@ else
 
             if [ -f "${WINE_BINARIES}/wine64" ];
             then
-                export WINELOADER="${WINE_BINARIES}/wine64"
                 export WINEARCH=win64
+
+                export WINELOADER="${WINE_BINARIES}/wine64"
+                
+                export WINEDLLPATH="${WINE_PATH}/opt/wine-${WINE_BRANCH}"
+                export WINEDLLPATH+="/lib64/x86_64-windows"
+
+                if [ -f "/usr/local/bin/box64" ];
+                then
+                    WINE_SO_PATH="${WINE_PATH}/opt/wine-${WINE_BRANCH}"
+                    WINE_SO_PATH+="/lib64/x86_64-unix"
+
+                    echo "$WINE_SO_PATH" | grep -q "$BOX64_LD_LIBRARY_PATH"
+
+                    if ! [ "$?" == "0" ];
+                    then
+                        export $BOX64_LD_LIBRARY_PATH+=":$WINE_SO_PATH"
+                    fi
+                fi
+
             else
-                export WINELOADER="${WINE_BINARIES}/wine"
                 export WINEARCH=win32
+                
+                export WINELOADER="${WINE_BINARIES}/wine"
+                
+                export WINEDLLPATH="${WINE_PATH}/opt/wine-${WINE_BRANCH}"
+                export WINEDLLPATH+="/lib/i386-windows"
+
+                if [ -f "/usr/local/bin/box86" ];
+                then
+                    WINE_SO_PATH="${WINE_PATH}/opt/wine-${WINE_BRANCH}"
+                    WINE_SO_PATH+="/lib/i386-unix"
+
+                    echo "$WINE_SO_PATH" | grep -q "$BOX86_LD_LIBRARY_PATH"
+
+                    if ! [ "$?" == "0" ];
+                    then
+                        export $BOX86_LD_LIBRARY_PATH+=":$WINE_SO_PATH"
+                    fi
+                fi
             fi
 
             export WINESERVER="${WINE_BINARIES}/wineserver"
             export WINEDEBUG=-all
 
-            alias wine="${WINELOADER}"            
+            alias wine="${WINELOADER}"
             alias wineboot="wine ${WINE_UTILS}/wineboot.exe"
             alias winecfg="wine ${WINE_UTILS}/winecfg.exe"
             alias winefile="wine ${WINE_UTILS}/winefile.exe"

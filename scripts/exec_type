@@ -1,23 +1,13 @@
 #!/bin/bash
 
-function abort
-{
-    REASON=$1
-
-    if [ "$REASON" == "" ];
-    then
-        echo $REASON
-    fi
-
-    echo ""
-    
-    exit 1
-}
-
 
 function usage
 {
-
+    echo "Usage: exec_type <executable path>"
+    echo ""
+    echo "Will output linux/windows-i386/amd64, depending of the"
+    echo "executable architecture, or unknown if none of these."
+    echo ""
 }
 
 
@@ -38,42 +28,32 @@ echo ${FILE_TYPE} | grep "ELF 32-bit" > /dev/null
 
 if [ "$?" == "0" ];
 then
-    LINUX_X86=1
-
     echo "linux-i386"
     echo ""
+else
+    echo ${FILE_TYPE} | grep "ELF 64-bit" > /dev/null
+
+    if [ "$?" == "0" ];
+    then
+        echo "linux-amd64"
+        echo ""
+    else
+        echo ${FILE_TYPE} | grep "PE32 executable" > /dev/null
+
+        if [ "$?" == "0" ];
+        then
+            echo "windows-i386"
+            echo ""
+        else
+            echo ${FILE_TYPE} | grep "PE32+ executable" > /dev/null
+
+            if [ "$?" == "0" ];
+            then
+                echo "windows-amd64"
+                echo ""
+            fi
+        fi
+    fi
 fi
 
-
-echo ${FILE_TYPE} | grep "ELF 64-bit" > /dev/null
-
-if [ "$?" == "0" ];
-then
-    LINUX_X64=1
-
-    echo "linux-amd64"
-    echo ""
-fi
-
-
-echo ${FILE_TYPE} | grep "PE32 executable" > /dev/null
-
-if [ "$?" == "0" ];
-then
-    WINDOWS_X86=1
-
-    echo "windows-i386"
-    echo ""
-fi
-
-
-echo ${FILE_TYPE} | grep "PE32+ executable" > /dev/null
-
-if [ "$?" == "0" ];
-then
-    WINDOWS_X64=1
-
-    echo "windows-amd64"
-    echo ""
-fi
 

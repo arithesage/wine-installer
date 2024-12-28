@@ -17,7 +17,9 @@ function abort
 
 function usage
 {
-
+    echo "Usage: win_start <windows executable path>"
+    echo "Activates the needed Wine prefix and runs the executable."
+    echo ""
 }
 
 
