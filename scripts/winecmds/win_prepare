@@ -29,6 +29,19 @@ function setup_prefix
         abort "Do chmod -R 770 in '$1' and try again."
     fi
 
+    if [ "$WINEARCH" == "win32" ];
+    then
+        if ! [ -f "$HOME/.default_win32_env" ];
+        then
+            echo "TODO"
+        fi
+    else
+        if ! [ -f "$HOME/.default_win64_env" ];
+        then
+            echo "TODO"
+        fi
+    fi
+
     install_activator $WINEPREFIX $WINEARCH
 
     echo "Initialization done."
