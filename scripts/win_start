@@ -36,23 +36,44 @@ SCRIPT_DIR=$(realpath $(dirname $0))
 
 
 EXEC=$1
+EXEC_NAME=$(basename $EXEC)
+EXEC_PATH=$(dirname $EXEC)
+
 ARGS=${@:2}
 
-EXEC_TYPE=$("$SCRIPT_DIR/exec_type" "$EXEC")
 
-
-if [ "$EXEC_TYPE" == "windows-i386" ];
+if [ "$EXEC_PATH/${EXEC_NAME}_winenv" ];
 then
-    echo "Windows 32 bit binary detected."
-    echo "Executing '$EXEC' $ARGS with Wine ..."
-    echo ""
+    source "$EXEC_PATH/${EXEC_NAME}_winenv"
+else
+    EXEC_TYPE=$("$SCRIPT_DIR/exec_type" "$EXEC")
 
-elif [ "$EXEC_TYPE" == "windows-amd64" ];
-then
-    echo "Windows 64 bit binary detected."
-    echo "Executing '$EXEC' $ARGS with Wine64 ..."
-    echo ""
+    if [ "$EXEC_TYPE" == "windows-i386" ];
+    then
+        EXEC_BITS=32
+
+    elif [ "$EXEC_TYPE" == "windows-amd64" ];
+    then
+        EXEC_BITS=64
+    fi
+
+
+    if [ "$EXEC_BITS" == "32" ];
+    then
+        if [ "$HOME/.default_win32_env" ];
+        then
+            source "$HOME/.default_win32_env"
+        fi
+    else
+        if [ "$HOME/.default_win64_env" ];
+        then
+            source "$HOME/.default_win64_env"
+        fi
+    fi
 fi
 
 
+echo "Windows ${EXEC_BITS} binary detected."
+echo "Executing '$EXEC' $ARGS with Wine ..."
+echo ""
 
