@@ -53,38 +53,39 @@ export PATH=$PATH:$SCRIPT_DIR:$SCRIPT_DIR/aux
 WINE_BRANCH=$1
 WINE_VERSION=$2
 ARCH=$3
-DOWNLOAD_DIR=$4
+INSTALL_DIR=$4
+
 DISTRO_VERSION_NAME=$(os_version_name)
 
-INSTALL_PATH="/opt/wine-setup"
+WINESETUP_INSTALL_PATH="/opt/wine-setup"
 
 
-if ! [ -d "$INSTALL_PATH" ];
+if ! [ -d "$WINESETUP_INSTALL_PATH" ];
 then
-    sudo mkdir -p "$INSTALL_PATH"
+    sudo mkdir -p "$WINESETUP_INSTALL_PATH"
 fi
 
 
-sudo cp "$SCRIPT_DIR/download_wine" "$INSTALL_PATH/"
-sudo cp "$SCRIPT_DIR/download_winetricks" "$INSTALL_PATH/"
-sudo cp "$SCRIPT_DIR/extract_iso" "$INSTALL_PATH/"
-sudo cp "$SCRIPT_DIR/clean_iso" "$INSTALL_PATH/"
-sudo cp "$SCRIPT_DIR/use_wine" "$INSTALL_PATH/"
-sudo cp "$SCRIPT_DIR/exec_type" "$INSTALL_PATH/"
+sudo cp "$SCRIPT_DIR/download_wine" "$WINESETUP_INSTALL_PATH/"
+sudo cp "$SCRIPT_DIR/download_winetricks" "$WINESETUP_INSTALL_PATH/"
+sudo cp "$SCRIPT_DIR/extract_iso" "$WINESETUP_INSTALL_PATH/"
+sudo cp "$SCRIPT_DIR/clean_iso" "$WINESETUP_INSTALL_PATH/"
+sudo cp "$SCRIPT_DIR/use_wine" "$WINESETUP_INSTALL_PATH/"
+sudo cp "$SCRIPT_DIR/exec_type" "$WINESETUP_INSTALL_PATH/"
 
-sudo cp -r "$SCRIPT_DIR/winecmds" "$INSTALL_PATH/"
+sudo cp -r "$SCRIPT_DIR/winecmds" "$WINESETUP_INSTALL_PATH/"
 
-sudo ln -sf "$INSTALL_PATH/download_wine" /usr/local/bin/download_wine
-sudo ln -sf "$INSTALL_PATH/download_winetricks" /usr/local/bin/download_winetricks
-sudo ln -sf "$INSTALL_PATH/extract_iso" /usr/local/bin/extract_iso
-sudo ln -sf "$INSTALL_PATH/clean_iso" /usr/local/bin/clean_iso
-sudo ln -sf "$INSTALL_PATH/use_wine" /usr/local/bin/use_wine
-sudo ln -sf "$INSTALL_PATH/exec_type" /usr/local/bin/exec_type
+sudo ln -sf "$WINESETUP_INSTALL_PATH/download_wine" /usr/local/bin/download_wine
+sudo ln -sf "$WINESETUP_INSTALL_PATH/download_winetricks" /usr/local/bin/download_winetricks
+sudo ln -sf "$WINESETUP_INSTALL_PATH/extract_iso" /usr/local/bin/extract_iso
+sudo ln -sf "$WINESETUP_INSTALL_PATH/clean_iso" /usr/local/bin/clean_iso
+sudo ln -sf "$WINESETUP_INSTALL_PATH/use_wine" /usr/local/bin/use_wine
+sudo ln -sf "$WINESETUP_INSTALL_PATH/exec_type" /usr/local/bin/exec_type
 
-sudo ln -sf "$INSTALL_PATH/winecmds/win_prepare" /usr/local/bin/win_prepare
-sudo ln -sf "$INSTALL_PATH/winecmds/wincd_eject" /usr/local/bin/wincd_eject
-sudo ln -sf "$INSTALL_PATH/winecmds/wincd_load" /usr/local/bin/wincd_load
-sudo ln -sf "$INSTALL_PATH/winecmds/win_help" /usr/local/bin/win_help
+sudo ln -sf "$WINESETUP_INSTALL_PATH/winecmds/win_prepare" /usr/local/bin/win_prepare
+sudo ln -sf "$WINESETUP_INSTALL_PATH/winecmds/wincd_eject" /usr/local/bin/wincd_eject
+sudo ln -sf "$WINESETUP_INSTALL_PATH/winecmds/wincd_load" /usr/local/bin/wincd_load
+sudo ln -sf "$WINESETUP_INSTALL_PATH/winecmds/win_help" /usr/local/bin/win_help
 
 
 source "$SCRIPT_DIR/aux/check_site"
@@ -154,12 +155,10 @@ fi
 source "$SCRIPT_DIR/aux/get_wine_urls" $WINE_BRANCH $DISTRO_VERSION_NAME --quiet
 
 
-if ! [ "$DOWNLOAD_DIR" == "" ];
-then
-    WINE_DOWNLOAD_DIR="$DOWNLOAD_DIR"
-else
-    WINE_DOWNLOAD_DIR="/var/tmp/wine-pkgs/${WINE_VERSION}"
-fi
+
+WINE_DOWNLOAD_DIR="/var/tmp/wine-pkgs/${WINE_VERSION}"
+
+
 
 if ! [ -d "${WINE_DOWNLOAD_DIR}" ];
 then
@@ -224,81 +223,47 @@ then
 fi
 
 
-WINE_BRANCH_FILE="/var/tmp/wine-${WINE_VERSION}/.wine_branch"
-WINE_VERSION_FILE="/var/tmp/wine-${WINE_VERSION}/.wine_version"
-WINE_ARCH_FILE="/var/tmp/wine-${WINE_VERSION}/.wine_arch"
-
 WINE32_DIR="wine-${WINE_VERSION}_i386"
 WINE64_DIR="wine-${WINE_VERSION}_amd64"
 
 
-echo "#!/bin/bash" > "$PWD/extract"
+echo "Installing ..."
+echo "--------------"
 
-echo "" >> "$PWD/extract"
+if ! [ -d "$INSTALL_DIR" ];
+then
+    mkdir -p "$INSTALL_DIR"
+fi
+
 
 if [ "$ARCH" == "i386" ] || [ "$ARCH" == "both" ];
 then
-    echo "echo \"\"" >> "$PWD/extract"
-    echo "echo \"Extracting Wine (i386) in /var/tmp/${WINE32_DIR} ...\"" \
-        >> "$PWD/extract"
+    for package in $(ls *_i386.deb);
+    do
+        dpkg-deb -x $package /var/tmp/$WINE32_DIR
+    done
 
-    echo "" >> "$PWD/extract"
+    echo "$BRANCH" > "/var/tmp/$WINE32_DIR/.wine_branch"
+    echo "$WINE_VERSION" > "/var/tmp/$WINE32_DIR/.wine_version"
+    echo "$ARCH" > "/var/tmp/$WINE32_DIR/.wine_arch"
 
-    echo "for package in \$(ls *_i386.deb);" >> "$PWD/extract"
-    echo "do" >> "$PWD/extract"
-    echo "    dpkg-deb -x \$package /var/tmp/${WINE32_DIR}" \
-        >> "$PWD/extract"
-    echo "done" >> "$PWD/extract"
-
-    echo "echo \"${BRANCH}\" > /var/tmp/${WINE32_DIR}/.wine_branch" \
-          >> "$PWD/extract"
-    
-    echo "echo \"${WINE_VERSION}\" > /var/tmp/${WINE32_DIR}/.wine_version" \
-          >> "$PWD/extract"
-
-    echo "echo \"${ARCH}\" > /var/tmp/${WINE32_DIR}/.wine_arch" \
-          >> "$PWD/extract"
-
-    echo "echo \"\"">> "$PWD/extract"
-    echo "echo \"Done.\"" >> "$PWD/extract"
+    sudo mv /var/tmp/$WINE32_DIR $INSTALL_DIR/$WINE32_DIR
 fi
 
-echo "" >> "$PWD/extract"
 
 if [ "$ARCH" == "amd64" ] || [ "$ARCH" == "both" ];
 then
-    echo "echo \"\"" >> "$PWD/extract"
-    echo "echo \"Extracting Wine (amd64) in /var/tmp/${WINE64_DIR} ...\"" \
-        >> "$PWD/extract"
+    for package in $(ls *_amd64.deb);
+    do
+        dpkg-deb -x $package $INSTALL_DIR/$WINE64_DIR
+    done
 
-    echo "" >> "$PWD/extract"
+    echo "$BRANCH" > "/var/tmp/$WINE64_DIR/.wine_branch"
+    echo "$WINE_VERSION" > "/var/tmp/$WINE64_DIR/.wine_version"
+    echo "$ARCH" > "/var/tmp/$WINE64_DIR/.wine_arch"
 
-    echo "for package in \$(ls *_amd64.deb);" >> "$PWD/extract"
-    echo "do" >> "$PWD/extract"
-    echo "    dpkg-deb -x \$package /var/tmp/${WINE64_DIR}" \
-        >> "$PWD/extract"
-    echo "done" >> "$PWD/extract"
-
-    echo "echo \"${BRANCH}\" > /var/tmp/${WINE64_DIR}/.wine_branch" \
-          >> "$PWD/extract"
-    
-    echo "echo \"${WINE_VERSION}\" > /var/tmp/${WINE64_DIR}/.wine_version" \
-          >> "$PWD/extract"
-
-    echo "echo \"${ARCH}\" > /var/tmp/${WINE64_DIR}/.wine_arch" \
-          >> "$PWD/extract"
-
-    echo "echo \"\"">> "$PWD/extract"
-    echo "echo \"Done.\"" >> "$PWD/extract"
+    sudo mv /var/tmp/$WINE64_DIR $INSTALL_DIR/$WINE64_DIR
 fi
-
-echo "" >> "$PWD/extract"
- 
-echo "echo \"\"">> "$PWD/extract"
-echo "echo \"Finished.\"" >> "$PWD/extract"
-echo "echo \"\"" >> "$PWD/extract"
-
-chmod +x "$PWD/extract"
 
 
 if [ "$ARCH" == "i386" ] || [ "$ARCH" == "both" ];
