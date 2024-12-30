@@ -17,7 +17,7 @@ function abort
 
 function usage
 {
-    echo "Usage: download-wine <branch> <version> [i386|amd64|both] [out dir]"
+    echo "Usage: install-wine <branch> <version> [i386|amd64|both] [inst dir]"
     echo ""
     echo "Branch is one of these: stable, devel or staging."
     echo ""
@@ -26,11 +26,11 @@ function usage
     echo "Also, if host architecture is amd64, the packages for both"
     echo "architectures will be downloaded."
     echo ""
-    echo "Packages will be downloaded by default in"
-    echo "/var/tmp/wine-pkgs/{version} but you can specify"
-    echo "a custom path in 'out dir'."
+    echo "Packages will be installed by default in"
+    echo "/opt/wine-{version}_{arch} but you can specify"
+    echo "a custom path in 'inst dir'."
     echo ""
-    echo "WARNING! You can download Wine without admin privileges, BUT,"
+    echo "WARNING! You can install Wine without admin privileges, BUT,"
     echo "you need them for updating APT database and GPG key installing."
     echo ""
 }
@@ -301,8 +301,16 @@ echo "echo \"\"" >> "$PWD/extract"
 chmod +x "$PWD/extract"
 
 
-echo "Downloaded in /var/tmp/wine-${WINE_VERSION}."
-echo "Run /var/tmp/wine-${WINE_VERSION}/extract."
+if [ "$ARCH" == "i386" ] || [ "$ARCH" == "both" ];
+then
+    echo "Wine (32 bit) installed in /opt/wine-${WINE_VERSION}_i386."
+fi
+
+if [ "$ARCH" == "amd64" ] || [ "$ARCH" == "both" ];
+then
+    echo "Wine (64 bit) installed in /opt/wine-${WINE_VERSION}_amd64."
+fi
+
 echo ""
 
 
