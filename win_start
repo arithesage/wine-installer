@@ -46,34 +46,48 @@ if [ "$EXEC_PATH/${EXEC_NAME}_winenv" ];
 then
     source "$EXEC_PATH/${EXEC_NAME}_winenv"
 else
-    EXEC_TYPE=$("$SCRIPT_DIR/exec_type" "$EXEC")
+    EXEC_TYPE=$(exec_type "$EXEC")
 
     if [ "$EXEC_TYPE" == "windows-i386" ];
     then
-        EXEC_BITS=32
+        echo "Windows (32 bits) binary detected."
 
-    elif [ "$EXEC_TYPE" == "windows-amd64" ];
-    then
-        EXEC_BITS=64
-    fi
-
-
-    if [ "$EXEC_BITS" == "32" ];
-    then
         if [ "$HOME/.default_win32_env" ];
         then
             source "$HOME/.default_win32_env"
-        fi
-    else
+        fi        
+
+    elif [ "$EXEC_TYPE" == "windows-amd64" ];
+    then
+        echo "Windows (64 bits) binary detected."
+
         if [ "$HOME/.default_win64_env" ];
         then
             source "$HOME/.default_win64_env"
         fi
-    fi
+    fi    
 fi
 
 
-echo "Windows ${EXEC_BITS} binary detected."
+if [ "$WINEPREFIX" == "" ] && [ "$WINEARCH" == "" ] && 
+   [ "$WINELOADER" == "" ];
+then
+    echo "No Wine environment was loaded."
+    echo ""
+    echo "First, install a Wine version with 'download_wine'."
+    echo "This will make it the default one if no one is."
+    echo ""
+    echo "Then, use 'win_prepare' to create a new Wine Prefix with the"
+    echo "desired name and architecture (if nothing is specified,"
+    echo "the default ones will be used)."
+    echo ""
+    echo "You can also activate a prefix on your own."
+    abort
+fi
+
+
 echo "Executing '$EXEC' $ARGS with Wine ..."
 echo ""
 
+
+"$WINELOADER" "$EXEC" $ARGS

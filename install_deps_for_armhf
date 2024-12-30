@@ -16,13 +16,15 @@ function abort
 }
 
 
+
+
 if ! [ "$TERMUX_VERSION" == "" ];
 then
     abort "This script isn't for Termux."
 fi
 
 
-sudo -v
+sudo echo ""
 
 if ! [ "$?" == "0" ];
 then

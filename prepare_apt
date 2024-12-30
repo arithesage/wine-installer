@@ -50,13 +50,16 @@ SCRIPT_DIR=$(realpath $(dirname $0))
 
 
 
+export PATH=$PATH:$SCRIPT_DIR:$SCRIPT_DIR/aux
+
+
 echo "Checking if APT is ready for downloading Wine and Winetricks..."
 echo ""
 
 
-export DISTRO_VERSION_NAME=$("$SCRIPT_DIR/os_version_name")
+export DISTRO_VERSION_NAME=$(os_version_name)
 
-source "$SCRIPT_DIR/get_wine_urls"
+source "$SCRIPT_DIR/aux/get_wine_urls"
 
 
 if ! [ -f "/etc/apt/keyrings/winehq-archive.key" ];

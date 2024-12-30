@@ -50,15 +50,47 @@ fi
 
 SCRIPT_DIR=$(realpath $(dirname $0))
 
+export PATH=$PATH:$SCRIPT_DIR:$SCRIPT_DIR/aux
+
 
 WINE_BRANCH=$1
 WINE_VERSION=$2
 ARCH=$3
 DOWNLOAD_DIR=$4
-DISTRO_VERSION_NAME=$("$SCRIPT_DIR/os_version_name")
+DISTRO_VERSION_NAME=$(os_version_name)
+
+INSTALL_PATH="/opt/wine-setup"
 
 
-source "$SCRIPT_DIR/check_site"
+if ! [ -d "$INSTALL_PATH" ];
+then
+    sudo mkdir -p "$INSTALL_PATH"
+fi
+
+
+sudo cp "$SCRIPT_DIR/download_wine" "$INSTALL_PATH/"
+sudo cp "$SCRIPT_DIR/download_winetricks" "$INSTALL_PATH/"
+sudo cp "$SCRIPT_DIR/extract_iso" "$INSTALL_PATH/"
+sudo cp "$SCRIPT_DIR/clean_iso" "$INSTALL_PATH/"
+sudo cp "$SCRIPT_DIR/use_wine" "$INSTALL_PATH/"
+sudo cp "$SCRIPT_DIR/exec_type" "$INSTALL_PATH/"
+
+sudo cp -r "$SCRIPT_DIR/winecmds" "$INSTALL_PATH/"
+
+sudo ln -sf "$INSTALL_PATH/download_wine" /usr/local/bin/download_wine
+sudo ln -sf "$INSTALL_PATH/download_winetricks" /usr/local/bin/download_winetricks
+sudo ln -sf "$INSTALL_PATH/extract_iso" /usr/local/bin/extract_iso
+sudo ln -sf "$INSTALL_PATH/clean_iso" /usr/local/bin/clean_iso
+sudo ln -sf "$INSTALL_PATH/use_wine" /usr/local/bin/use_wine
+sudo ln -sf "$INSTALL_PATH/exec_type" /usr/local/bin/exec_type
+
+sudo ln -sf "$INSTALL_PATH/winecmds/win_prepare" /usr/local/bin/win_prepare
+sudo ln -sf "$INSTALL_PATH/winecmds/wincd_eject" /usr/local/bin/wincd_eject
+sudo ln -sf "$INSTALL_PATH/winecmds/wincd_load" /usr/local/bin/wincd_load
+sudo ln -sf "$INSTALL_PATH/winecmds/win_help" /usr/local/bin/win_help
+
+
+source "$SCRIPT_DIR/aux/check_site"
 
 if ! [ "$WINE_URL_OK" == "1" ];
 then
@@ -73,7 +105,7 @@ then
 fi
 
 
-source "$SCRIPT_DIR/packages_arch" --quiet
+source "$SCRIPT_DIR/aux/packages_arch" --quiet
 
 
 if [ "$ARCH" == "" ];
@@ -122,7 +154,7 @@ fi
 
 
 
-source "$SCRIPT_DIR/get_wine_urls" $WINE_BRANCH $DISTRO_VERSION_NAME --quiet
+source "$SCRIPT_DIR/aux/get_wine_urls" $WINE_BRANCH $DISTRO_VERSION_NAME --quiet
 
 
 if ! [ "$DOWNLOAD_DIR" == "" ];
@@ -304,6 +336,7 @@ fi
 echo ""
 echo "Done."
 echo ""
+
 
 
 
