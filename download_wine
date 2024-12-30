@@ -33,9 +33,6 @@ function usage
     echo "WARNING! You can download Wine without admin privileges, BUT,"
     echo "you need them for updating APT database and GPG key installing."
     echo ""
-    echo "NOTE: This script was made for downloading Wine in ARM machines."
-    echo "      If you are in x86, use 'apt-install-wine32/64' instead."
-    echo ""
 }
 
 
@@ -172,7 +169,7 @@ fi
 
 if ! [ -f "/etc/apt/keyrings/winehq-archive.key" ];
 then
-    "$SCRIPT_DIR/prepare_apt"
+    prepare_apt
 
     if ! [ "$?" == "0" ];
     then
@@ -304,37 +301,8 @@ echo "echo \"\"" >> "$PWD/extract"
 chmod +x "$PWD/extract"
 
 
-if ! [ -f "/usr/local/bin/wine/use_wine" ];
-then
-    if ! [ -d "/usr/local/bin/wine" ];
-    then
-        sudo mkdir -p "/usr/local/bin/wine"
-    fi
-
-    sudo cp -f "$SCRIPT_DIR/scripts/use_wine" "/usr/local/bin/wine/"
-    sudo cp -f "$SCRIPT_DIR/scripts/exec_type" "/usr/local/bin/wine/"
-
-    sudo ln -sf "/usr/local/bin/wine/use_wine" "/usr/local/bin/use_wine"
-fi
-
-
-if ! [ -f "/usr/local/bin/wine/winecmds/win_prepare" ];
-then
-    sudo cp -rf "$SCRIPT_DIR/scripts/winecmds" "/usr/local/bin/wine/"
-fi
-
-
-if ! [ -f "/usr/local/bin/win_prepare" ];
-then
-    sudo ln -sf "/usr/local/bin/wine/winecmds/win_prepare" "/usr/local/bin/win_prepare"
-    sudo ln -sf "/usr/local/bin/wine/winecmds/win_help" "/usr/local/bin/win_help"
-    sudo ln -sf "/usr/local/bin/wine/winecmds/wincd_load" "/usr/local/bin/wincd_load"
-    sudo ln -sf "/usr/local/bin/wine/winecmds/wincd_eject" "/usr/local/bin/wincd_eject"
-fi
-
-
-echo ""
-echo "Done."
+echo "Downloaded in /var/tmp/wine-${WINE_VERSION}."
+echo "Run /var/tmp/wine-${WINE_VERSION}/extract."
 echo ""
 
 

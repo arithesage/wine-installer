@@ -15,6 +15,23 @@ function abort
 }
 
 
+function install_activator
+{
+    WINEPREFIX=$1
+    WINEARCH=$2
+
+    ACTIVATOR=$WINEPREFIX/activate
+
+    echo "export WINEPREFIX=\"$WINEPREFIX\"" > "$ACTIVATOR"
+    echo "export WINEARCH=$WINEARCH" >> "$ACTIVATOR"
+    echo "export WIN_C=\"$WINEPREFIX/drive_c\"" >> "$ACTIVATOR"
+    echo "export WIN_D=\"$WINEPREFIX/drive_d\"" >> "$ACTIVATOR"
+    echo "export WINEDEBUG=-all" >> "$ACTIVATOR"
+    echo "echo \"WINE prefix '$WINEPREFIX' activated.\"" >> "$ACTIVATOR"
+    echo "echo \"\"" >> "$ACTIVATOR"
+}
+
+
 function setup_prefix
 {
     WINEPREFIX=$1

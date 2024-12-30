@@ -18,7 +18,15 @@ function abort
 function usage
 {
     echo "Usage: win_start <windows executable path>"
-    echo "Activates the needed Wine prefix and runs the executable."
+    echo "Executes a Windows program."
+    echo ""
+    echo "The Wine environment to use can be loaded prior calling"
+    echo "'win_start', or stored in a file '{exe_file}_winenv'."
+    echo ""
+    echo "If none of these are available, the exec format will be"
+    echo "checked and the default environment for the architecture"
+    echo "(\$HOME/default_win32_env or \$HOME/default_win64_env) will"
+    echo "be used (if it exists)."
     echo ""
 }
 
@@ -42,46 +50,68 @@ EXEC_PATH=$(dirname $EXEC)
 ARGS=${@:2}
 
 
-if [ "$EXEC_PATH/${EXEC_NAME}_winenv" ];
+if ! [ "$WINEPREFIX" == "" ] && ! [ "$WINELOADER" == "" ];
 then
-    source "$EXEC_PATH/${EXEC_NAME}_winenv"
-else
-    EXEC_TYPE=$(exec_type "$EXEC")
-
-    if [ "$EXEC_TYPE" == "windows-i386" ];
+    echo "Detected and using a loaded Wine environment."
+    echo ""
+then
+    if [ "$EXEC_PATH/${EXEC_NAME}_winenv" ];
     then
-        echo "Windows (32 bits) binary detected."
+        source "$EXEC_PATH/${EXEC_NAME}_winenv"
+        echo -n "Found and using the Wine environment associated"
+        echo "with this executable."
+    else
+        echo -n "No Wine environment loaded found, and no one was"
+        echo "found associated with this executable."
+        echo ""
+        echo -n "Checking exec type and falling back to the default"
+        echo "environments..."
+        echo ""
 
-        if [ "$HOME/.default_win32_env" ];
+        EXEC_TYPE=$(exec_type "$EXEC")
+
+        if [ "$EXEC_TYPE" == "windows-i386" ];
         then
-            source "$HOME/.default_win32_env"
-        fi        
+            echo "Windows (32 bits) binary detected."
 
-    elif [ "$EXEC_TYPE" == "windows-amd64" ];
-    then
-        echo "Windows (64 bits) binary detected."
+            if [ "$HOME/.default_win32_env" ];
+            then
+                source "$HOME/.default_win32_env"
+            fi
 
-        if [ "$HOME/.default_win64_env" ];
+            echo "No default Win32 environment found."
+            echo ""
+
+        elif [ "$EXEC_TYPE" == "windows-amd64" ];
         then
-            source "$HOME/.default_win64_env"
-        fi
-    fi    
+            echo "Windows (64 bits) binary detected."
+
+            if [ "$HOME/.default_win64_env" ];
+            then
+                source "$HOME/.default_win64_env"
+            fi
+
+            echo "No default Win64 environment found."
+            echo ""
+        fi    
+    fi
 fi
 
 
 if [ "$WINEPREFIX" == "" ] && [ "$WINEARCH" == "" ] && 
    [ "$WINELOADER" == "" ];
 then
-    echo "No Wine environment was loaded."
+    echo "No Wine environment is available."
     echo ""
     echo "First, install a Wine version with 'download_wine'."
-    echo "This will make it the default one if no one is."
+    echo "This will make it the default one if no one is found."
     echo ""
-    echo "Then, use 'win_prepare' to create a new Wine Prefix with the"
+    echo "Then, use 'win_prepare' to create a new Wine prefix with the"
     echo "desired name and architecture (if nothing is specified,"
     echo "the default ones will be used)."
     echo ""
-    echo "You can also activate a prefix on your own."
+    echo "You can also activate a prefix on your own prior calling"
+    echo "'win_start'."
     abort
 fi
 
