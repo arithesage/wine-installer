@@ -248,6 +248,11 @@ then
     echo "$ARCH" > "/var/tmp/$WINE32_DIR/.wine_arch"
 
     sudo mv /var/tmp/$WINE32_DIR $INSTALL_DIR/$WINE32_DIR
+
+    if ! [ -f "$HOME/.default_win32_env" ];
+    then
+        echo "$INSTALL_DIR/$WINE32_DIR" > "$HOME/.default_win32_env"
+    fi
 fi
 
 
@@ -263,6 +268,11 @@ then
     echo "$ARCH" > "/var/tmp/$WINE64_DIR/.wine_arch"
 
     sudo mv /var/tmp/$WINE64_DIR $INSTALL_DIR/$WINE64_DIR
+
+    if ! [ -f "$HOME/.default_win64_env" ];
+    then
+        echo "$INSTALL_DIR/$WINE64_DIR" > "$HOME/.default_win64_env"
+    fi
 fi
 
 
