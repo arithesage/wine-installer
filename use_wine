@@ -69,10 +69,18 @@ then
 
         if [ "$(which win_prepare)" == "" ];
         then
-            export PATH=$PATH:$SCRIPT_DIR:$SCRIPT_DIR/winecmds
+            export PATH=$PATH:$SCRIPT_DIR
 
-            echo -n "Added temporaly $SCRIPT_DIR and $SCRIPT_DIR/winecmds"
-            echo "to PATH."
+            echo "Added temporally '$SCRIPT_DIR' to PATH."
+            echo ""
+        fi
+
+
+        if [ "$(which wine)" == "" ];
+        then
+            export PATH=$PATH:$SCRIPT_DIR/winecmds
+
+            echo "Added temporally '$SCRIPT_DIR/winecmds' to PATH."
             echo ""
         fi
     fi
