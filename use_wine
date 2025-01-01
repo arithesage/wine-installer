@@ -10,6 +10,11 @@ function usage
 }
 
 
+SCRIPT_DIR=$(realpath $(dirname ${BASH_SOURCE[0]}))
+
+
+
+
 if [ "$1" == "" ];
 then
     usage

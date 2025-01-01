@@ -22,7 +22,7 @@ function install_activator
 
     ACTIVATOR=$WINEPREFIX/activate
 
-    echo "export WINEPREFIX=\"$WINEPREFIX\"" >> "$ACTIVATOR"
+    echo "export WINEPREFIX=\"$WINEPREFIX\"" > "$ACTIVATOR"
     echo "export WINEARCH=$WINEARCH" >> "$ACTIVATOR"
     echo "export WIN_C=\"$WINEPREFIX/drive_c\"" >> "$ACTIVATOR"
     echo "export WIN_D=\"$WINEPREFIX/drive_d\"" >> "$ACTIVATOR"
@@ -146,7 +146,7 @@ then
     then
         echo "No activator found. One new will be generated."
 
-        if [ -d "$PREFIXES_ROOT/$PREFIX_NAME/drive_c/Program Files (x86)" ];
+        if [ -d "$WIN_ROOT/$PREFIX_NAME/drive_c/Program Files (x86)" ];
         then
             echo "It seems a win64 prefix."
             ARCH=win64
@@ -159,6 +159,6 @@ then
     fi
 
 else
-    setup_prefix "$PREFIXES_ROOT/$PREFIX_NAME" $ARCH
+    setup_prefix "$WIN_ROOT/$PREFIX_NAME" $ARCH
 fi
 
