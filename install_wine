@@ -251,6 +251,12 @@ then
 
     if ! [ -f "$HOME/.default_win32_env" ];
     then
+        echo "Creating the default environment for Windows (32 bit)..."
+        echo "--------------------------------------------------------"
+
+        source "$SCRIPT_DIR/use_wine" "$INSTALL_DIR/$WINE_32"
+        win_prepare
+        
         echo "$INSTALL_DIR/$WINE32_DIR" > "$HOME/.default_win32_env"
     fi
 fi

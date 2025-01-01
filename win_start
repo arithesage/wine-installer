@@ -54,10 +54,12 @@ if ! [ "$WINEPREFIX" == "" ] && ! [ "$WINELOADER" == "" ];
 then
     echo "Detected and using a loaded Wine environment."
     echo ""
+
 then
     if [ "$EXEC_PATH/${EXEC_NAME}_winenv" ];
     then
         source "$EXEC_PATH/${EXEC_NAME}_winenv"
+        
         echo -n "Found and using the Wine environment associated"
         echo "with this executable."
     else

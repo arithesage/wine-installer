@@ -1,44 +1,52 @@
 #!/bin/bash
 
-export WINE_PATH=$(realpath $(dirname ${BASH_SOURCE[0]}))
-
-WINE_ARCH=$(cat $WINE_PATH/.wine_arch)
-WINE_BRANCH=$(cat $WINE_PATH/.wine_branch)
-WINE_VERSION=$(cat $WINE_PATH/.wine_version)
-
-export WINE_BINARIES=$WINE_PATH/opt/wine-${WINE_BRANCH}/bin
+export WINE_PATH=$(realpath $(dirname $1))
 
 
-if [ "$WINE_ARCH" == "i386" ];
+if ! [ -f "$WINE_PATH/.wine_version" ];
 then
-    export WINE_UTILS=$WINE_PATH/opt/wine-${WINE_BRANCH}/lib/wine/i386-windows
+    echo "No Wine installation detected at '$WINE_PATH'."
+    echo ""
 
-    export WINELOADER="$WINE_BINARIES/wine"
-    export WINEDLLPATH=$WINE_UTILS
-
-    echo "$LD_LIBRARY_PATH" | grep -q "wine/i386-unix"
-
-    if ! [ "$?" == "0" ];
-    then
-        export LD_LIBRARY_PATH+=":$WINE_PATH/opt/wine-${WINE_BRANCH}/lib/wine/i386-unix"
-    fi
 else
-    export WINE_UTILS=$WINE_PATH/opt/wine-${WINE_BRANCH}/lib64/wine/x86_64-windows
+    WINE_ARCH=$(cat $WINE_PATH/.wine_arch)
+    WINE_BRANCH=$(cat $WINE_PATH/.wine_branch)
+    WINE_VERSION=$(cat $WINE_PATH/.wine_version)
 
-    export WINELOADER="$WINE_BINARIES/wine64"
-    export WINEDLLPATH=$WINE_UTILS
+    export WINE_BINARIES=$WINE_PATH/opt/wine-${WINE_BRANCH}/bin
 
-    echo "$LD_LIBRARY_PATH" | grep -q "wine/x86_64-unix"
 
-    if ! [ "$?" == "0" ];
+    if [ "$WINE_ARCH" == "i386" ];
     then
-        export LD_LIBRARY_PATH+="$WINE_PATH/opt/wine-${WINE_BRANCH}/lib64/wine/x86_64-unix"
+        export WINE_UTILS=$WINE_PATH/opt/wine-${WINE_BRANCH}/lib/wine/i386-windows
+
+        export WINELOADER="$WINE_BINARIES/wine"
+        export WINEDLLPATH=$WINE_UTILS
+
+        echo "$LD_LIBRARY_PATH" | grep -q "wine/i386-unix"
+
+        if ! [ "$?" == "0" ];
+        then
+            export LD_LIBRARY_PATH+=":$WINE_PATH/opt/wine-${WINE_BRANCH}/lib/wine/i386-unix"
+        fi
+    else
+        export WINE_UTILS=$WINE_PATH/opt/wine-${WINE_BRANCH}/lib64/wine/x86_64-windows
+
+        export WINELOADER="$WINE_BINARIES/wine64"
+        export WINEDLLPATH=$WINE_UTILS
+
+        echo "$LD_LIBRARY_PATH" | grep -q "wine/x86_64-unix"
+
+        if ! [ "$?" == "0" ];
+        then
+            export LD_LIBRARY_PATH+="$WINE_PATH/opt/wine-${WINE_BRANCH}/lib64/wine/x86_64-unix"
+        fi
     fi
+
+
+    export WINESERVER="$WINE_BINARIES/wineserver"
+
+
+    echo "Activated Wine $WINE_BRANCH ($WINE_VERSION): $WINE_PATH"
+    echo ""
 fi
-
-
-export WINESERVER="$WINE_BINARIES/wineserver"
-
-
-echo "Activated Wine $WINE_BRANCH ($WINE_VERSION): $WINE_PATH"
-echo ""
