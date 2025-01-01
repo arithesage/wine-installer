@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [ "$WINELOADER" == "" ];
+then
+    echo "No Wine environment loaded detected."
+    echo "Run 'use_wine' <Wine installation> to load one."
+    echo ""
+
+else
+    "$WINELOADER" "$WINE_UTILS/wineboot.exe" $*
+fi
