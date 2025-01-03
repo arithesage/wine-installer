@@ -70,6 +70,12 @@ DISTRO_VERSION_NAME=$(os_version_name)
 WINESETUP_INSTALL_PATH="/opt/wine-setup"
 
 
+if [ -f "$INSTALL_DIR/wine-${WINE_VERSION}_${ARCH}/opt/wine-${WINE_BRANCH}" ];
+then
+    abort "The requested Wine version is already installed."
+fi
+
+
 if ! [ -d "$WINESETUP_INSTALL_PATH" ];
 then
     sudo mkdir -p "$WINESETUP_INSTALL_PATH"
@@ -218,16 +224,24 @@ BRANCH=$WINE_BRANCH
 VERSION=$WINE_VERSION
 DISTRO=$DISTRO_VERSION_NAME
 
-if ! [ "$ARCH" == "both" ];
-then
-    apt download wine-${BRANCH}:${ARCH}=${VERSION}~${DISTRO}-1
-    apt download wine-${BRANCH}-${ARCH}=${VERSION}~${DISTRO}-1
+CONTROL="wine-${BRANCH}-${ARCH}_${VERSION}~"
+CONTROL+="${DISTRO_VERSION_NAME}-1_${ARCH}.deb"
 
+if [ -f "$CONTROL" ];
+then
+    echo "Already downloaded. Skipping."
 else
-    apt download wine-${BRANCH}:i386=${VERSION}~${DISTRO}-1
-    apt download wine-${BRANCH}-i386=${VERSION}~${DISTRO}-1
-    apt download wine-${BRANCH}:amd64=${VERSION}~${DISTRO}-1
-    apt download wine-${BRANCH}-amd64=${VERSION}~${DISTRO}-1
+    if ! [ "$ARCH" == "both" ];
+    then
+        apt download wine-${BRANCH}:${ARCH}=${VERSION}~${DISTRO}-1
+        apt download wine-${BRANCH}-${ARCH}=${VERSION}~${DISTRO}-1
+
+    else
+        apt download wine-${BRANCH}:i386=${VERSION}~${DISTRO}-1
+        apt download wine-${BRANCH}-i386=${VERSION}~${DISTRO}-1
+        apt download wine-${BRANCH}:amd64=${VERSION}~${DISTRO}-1
+        apt download wine-${BRANCH}-amd64=${VERSION}~${DISTRO}-1
+    fi
 fi
 
 
