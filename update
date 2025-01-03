@@ -1,0 +1,78 @@
+#!/bin/bash
+
+function abort
+{
+    REASON=$1
+
+    if ! [ "$REASON" == "" ];
+    then
+        echo $REASON
+    fi
+
+    echo ""
+    
+    exit 1
+}
+
+
+
+
+SCRIPT_DIR=$(realpath $(dirname $0))
+
+
+if ! [ -f "$HOME/.wine-setup_path" ];
+then
+    abort "No Wine-setup installation detected."
+fi
+
+
+WINESETUP_INSTALL_PATH=$(cat $HOME/.wine-setup_path)
+
+
+echo "Updating wine-setup installation in $WINESETUP_INSTALL_PATH ..."
+echo "---------------------------------------------------------------"
+
+"$SCRIPT_DIR/aux/test_write_permissions_in" "$WINESETUP_INSTALL_PATH"
+
+if [ "$?" == "0"];
+then
+    echo "Installing in a owned path as a regular user."
+    SUDO=""
+
+elif [ "$?" == "2" ];
+then
+    echo "Installing as super-user."
+    SUDO="sudo"
+else
+    abort "Installation failed."
+fi
+
+
+$SUDO cp "$SCRIPT_DIR/install_wine" "$WINESETUP_INSTALL_PATH/"
+$SUDO cp "$SCRIPT_DIR/download_winetricks" "$WINESETUP_INSTALL_PATH/"
+$SUDO cp "$SCRIPT_DIR/extract_iso" "$WINESETUP_INSTALL_PATH/"
+$SUDO cp "$SCRIPT_DIR/clean_iso" "$WINESETUP_INSTALL_PATH/"
+$SUDO cp "$SCRIPT_DIR/use_wine" "$WINESETUP_INSTALL_PATH/"
+$SUDO cp "$SCRIPT_DIR/exec_type" "$WINESETUP_INSTALL_PATH/"
+
+$SUDO cp -r "$SCRIPT_DIR/winecmds" "$WINESETUP_INSTALL_PATH/"
+
+$SUDO ln -sf "$WINESETUP_INSTALL_PATH/install_wine" /usr/local/bin/install_wine
+$SUDO ln -sf "$WINESETUP_INSTALL_PATH/download_winetricks" /usr/local/bin/download_winetricks
+$SUDO ln -sf "$WINESETUP_INSTALL_PATH/extract_iso" /usr/local/bin/extract_iso
+$SUDO ln -sf "$WINESETUP_INSTALL_PATH/clean_iso" /usr/local/bin/clean_iso
+$SUDO ln -sf "$WINESETUP_INSTALL_PATH/use_wine" /usr/local/bin/use_wine
+$SUDO ln -sf "$WINESETUP_INSTALL_PATH/exec_type" /usr/local/bin/exec_type
+
+$SUDO ln -sf "$WINESETUP_INSTALL_PATH/winecmds/win_prepare" /usr/local/bin/win_prepare
+$SUDO ln -sf "$WINESETUP_INSTALL_PATH/winecmds/wincd_eject" /usr/local/bin/wincd_eject
+$SUDO ln -sf "$WINESETUP_INSTALL_PATH/winecmds/wincd_load" /usr/local/bin/wincd_load
+$SUDO ln -sf "$WINESETUP_INSTALL_PATH/winecmds/win_help" /usr/local/bin/win_help
+$SUDO ln -sf "$WINESETUP_INSTALL_PATH/winecmds/wine_run" /usr/local/bin/wine_run
+$SUDO ln -sf "$WINESETUP_INSTALL_PATH/winecmds/wine_boot" /usr/local/bin/wine_boot
+$SUDO ln -sf "$WINESETUP_INSTALL_PATH/winecmds/wine_cfg" /usr/local/bin/wine_cfg
+$SUDO ln -sf "$WINESETUP_INSTALL_PATH/winecmds/wine_file" /usr/local/bin/wine_file
+
+echo ""
+echo "Done."
+echo ""

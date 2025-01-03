@@ -1,0 +1,28 @@
+#!/bin/bash
+
+DIR=$1
+
+echo "Checking if can write in $DIR ..."
+
+touch "$DIR/touched" > /dev/null
+
+if ! [ "$?" == "0" ];
+then
+    echo "Can't write in '$DIR'"
+    echo "Have super-user privileges?"
+
+    sudo touch "$DIR/touched" > /dev/null
+
+    if ! [ "$?" == "0" ];
+    then
+        echo "No. You have no permissions for writing there."
+        exit 1
+        
+    else
+        echo "Yes. You have them. Let's continue then."
+        exit 2
+    fi
+fi
+
+echo "You can write with your user."
+exit 0

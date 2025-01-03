@@ -35,8 +35,8 @@ function install_activator
 
 function setup_prefix
 {
-    WINEPREFIX=$1
-    WINEARCH=$2    
+    export WINEPREFIX=$1
+    export WINEARCH=$2    
 
     echo "Initializing prefix '$WINEPREFIX' with archtecture $WINEARCH..."
     echo ""
@@ -155,7 +155,7 @@ fi
 
 echo "Checking if a prefix '$PREFIX_NAME' already exists in '$WIN_ROOT' ..."
 
-if [ -d "$WIN_ROOT/$WIN_ROOT/dosdevices" ];
+if [ -d "$WIN_ROOT/$PREFIX_NAME/dosdevices" ];
 then
     echo "There is already a WINE prefix named '$PREFIX_NAME' here."
 
