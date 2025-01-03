@@ -36,10 +36,27 @@ function install_activator
 function setup_prefix
 {
     WINEPREFIX=$1
-    WINEARCH=$2
+    WINEARCH=$2    
 
     echo "Initializing prefix '$WINEPREFIX' with archtecture $WINEARCH..."
-    wineboot
+    echo ""
+
+    if [ "$WINELOADER" == "" ];
+    then
+        echo "No Wine environment loaded detected."
+        echo "Trying with default one for ${WINEARCH}."
+        echo ""
+
+        if [ -f "$HOME/.default_${WINEARCH}_env" ];
+        then
+            source "$HOME/.default_${WINEARCH}_env"
+        else
+            echo "No default Wine environment found for ${WINEARCH}."
+            abort "Install at least one win 'install_wine'"
+        fi
+    fi
+
+    wine_boot
 
     if ! [ "$?" == "0" ];
     then

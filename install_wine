@@ -86,6 +86,10 @@ sudo ln -sf "$WINESETUP_INSTALL_PATH/winecmds/win_prepare" /usr/local/bin/win_pr
 sudo ln -sf "$WINESETUP_INSTALL_PATH/winecmds/wincd_eject" /usr/local/bin/wincd_eject
 sudo ln -sf "$WINESETUP_INSTALL_PATH/winecmds/wincd_load" /usr/local/bin/wincd_load
 sudo ln -sf "$WINESETUP_INSTALL_PATH/winecmds/win_help" /usr/local/bin/win_help
+sudo ln -sf "$WINESETUP_INSTALL_PATH/winecmds/wine_run" /usr/local/bin/wine_run
+sudo ln -sf "$WINESETUP_INSTALL_PATH/winecmds/wine_boot" /usr/local/bin/wine_boot
+sudo ln -sf "$WINESETUP_INSTALL_PATH/winecmds/wine_cfg" /usr/local/bin/wine_cfg
+sudo ln -sf "$WINESETUP_INSTALL_PATH/winecmds/wine_file" /usr/local/bin/wine_file
 
 
 source "$SCRIPT_DIR/aux/check_site"
