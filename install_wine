@@ -33,6 +33,16 @@ function usage
     echo "WARNING! You can install Wine without admin privileges, BUT,"
     echo "you need them for updating APT database and GPG key installing."
     echo ""
+    echo "Also take in account that some versions may be not available in"
+    echo "some branches. For example, at this moment, if you want to install"
+    echo "Wine 9.0, you need to specify 'stable' branch, not devel or"
+    echo "staging."
+    echo ""
+    echo ""
+    echo -n "Always check https://dl.winehq.org/wine-builds"
+    echo "/{distro}/dists/{distro_version_name}/main/binary-{arch}/"
+    echo "for the versions available."
+    echo ""
 }
 
 
@@ -66,7 +76,7 @@ then
 fi
 
 
-sudo cp "$SCRIPT_DIR/download_wine" "$WINESETUP_INSTALL_PATH/"
+sudo cp "$SCRIPT_DIR/install_wine" "$WINESETUP_INSTALL_PATH/"
 sudo cp "$SCRIPT_DIR/download_winetricks" "$WINESETUP_INSTALL_PATH/"
 sudo cp "$SCRIPT_DIR/extract_iso" "$WINESETUP_INSTALL_PATH/"
 sudo cp "$SCRIPT_DIR/clean_iso" "$WINESETUP_INSTALL_PATH/"
@@ -75,7 +85,7 @@ sudo cp "$SCRIPT_DIR/exec_type" "$WINESETUP_INSTALL_PATH/"
 
 sudo cp -r "$SCRIPT_DIR/winecmds" "$WINESETUP_INSTALL_PATH/"
 
-sudo ln -sf "$WINESETUP_INSTALL_PATH/download_wine" /usr/local/bin/download_wine
+sudo ln -sf "$WINESETUP_INSTALL_PATH/install_wine" /usr/local/bin/install_wine
 sudo ln -sf "$WINESETUP_INSTALL_PATH/download_winetricks" /usr/local/bin/download_winetricks
 sudo ln -sf "$WINESETUP_INSTALL_PATH/extract_iso" /usr/local/bin/extract_iso
 sudo ln -sf "$WINESETUP_INSTALL_PATH/clean_iso" /usr/local/bin/clean_iso
@@ -231,12 +241,24 @@ WINE32_DIR="wine-${WINE_VERSION}_i386"
 WINE64_DIR="wine-${WINE_VERSION}_amd64"
 
 
+echo ""
 echo "Installing ..."
 echo "--------------"
 
-if ! [ -d "$INSTALL_DIR" ];
+if [ "$INSTALL_DIR" == "" ];
+then
+    INSTALL_DIR="/opt"
+    
+    sudo mkdir -p "$INSTALL_DIR"
+
+elif ! [ -d "$INSTALL_DIR" ];
 then
     mkdir -p "$INSTALL_DIR"
+fi
+
+if ! [ "$?" == "0" ];
+then
+    abort "Cannot create dir '$INSTALL_DIR'. Check your permissions there."
 fi
 
 
@@ -244,14 +266,19 @@ if [ "$ARCH" == "i386" ] || [ "$ARCH" == "both" ];
 then
     for package in $(ls *_i386.deb);
     do
-        dpkg-deb -x $package /var/tmp/$WINE32_DIR
+        dpkg-deb -x $package $WINE32_DIR
+
+        if ! [ "$?" == "0" ];
+        then
+            abort "Failed extracting '$package' in $WINE_32_DIR'."
+        fi
     done
 
-    echo "$BRANCH" > "/var/tmp/$WINE32_DIR/.wine_branch"
-    echo "$WINE_VERSION" > "/var/tmp/$WINE32_DIR/.wine_version"
-    echo "$ARCH" > "/var/tmp/$WINE32_DIR/.wine_arch"
+    echo "$BRANCH" > "$WINE32_DIR/.wine_branch"
+    echo "$WINE_VERSION" > "$WINE32_DIR/.wine_version"
+    echo "$ARCH" > "$WINE32_DIR/.wine_arch"
 
-    sudo mv /var/tmp/$WINE32_DIR $INSTALL_DIR/$WINE32_DIR
+    sudo mv $WINE32_DIR "$INSTALL_DIR/"
 
     if ! [ -f "$HOME/.default_win32_env" ];
     then
@@ -270,14 +297,19 @@ if [ "$ARCH" == "amd64" ] || [ "$ARCH" == "both" ];
 then
     for package in $(ls *_amd64.deb);
     do
-        dpkg-deb -x $package $INSTALL_DIR/$WINE64_DIR
+        dpkg-deb -x $package $WINE64_DIR
+
+        if ! [ "$?" == "0" ];
+        then
+            abort "Failed extracting '$package' in /var/tmp/$WINE_64_DIR'."
+        fi
     done
 
-    echo "$BRANCH" > "/var/tmp/$WINE64_DIR/.wine_branch"
-    echo "$WINE_VERSION" > "/var/tmp/$WINE64_DIR/.wine_version"
-    echo "$ARCH" > "/var/tmp/$WINE64_DIR/.wine_arch"
+    echo "$BRANCH" > "$WINE64_DIR/.wine_branch"
+    echo "$WINE_VERSION" > "$WINE64_DIR/.wine_version"
+    echo "$ARCH" > "$WINE64_DIR/.wine_arch"
 
-    sudo mv /var/tmp/$WINE64_DIR $INSTALL_DIR/$WINE64_DIR
+    sudo mv $WINE64_DIR "$INSTALL_DIR/"
 
     if ! [ -f "$HOME/.default_win64_env" ];
     then

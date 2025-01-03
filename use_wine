@@ -81,7 +81,7 @@ then
         fi
 
 
-        if [ "$(which wine)" == "" ];
+        if [ "$(which wine_run)" == "" ];
         then
             export PATH=$PATH:$SCRIPT_DIR/winecmds
 

@@ -36,7 +36,7 @@ then
 fi
 
 
-SCRIPT_DIR=$(realpath $(dirname $0))
+SCRIPT_DIR=$(realpath $(dirname ${BASH_SOURCE[0]}))
 
 
 if [ "$3" == "-q" ] || [ "$3" == "--quiet" ];
