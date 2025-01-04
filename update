@@ -34,17 +34,19 @@ echo "---------------------------------------------------------------"
 
 "$SCRIPT_DIR/aux/test_write_permissions_in" "$WINESETUP_INSTALL_PATH"
 
-if [ "$?" == "0"];
+if [ "$?" == "1" ];
 then
-    echo "Installing in a owned path as a regular user."
-    SUDO=""
-
-elif [ "$?" == "2" ];
-then
-    echo "Installing as super-user."
-    SUDO="sudo"
-else
     abort "Installation failed."
+else
+    if [ "$?" == "0" ];
+    then
+        echo "Installing in a owned path as a regular user."
+        SUDO=""
+
+    else
+        echo "Installing as super-user."
+        SUDO="sudo"
+    fi
 fi
 
 

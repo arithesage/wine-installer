@@ -8,6 +8,7 @@ touch "$DIR/touched" > /dev/null
 
 if ! [ "$?" == "0" ];
 then
+    echo ""
     echo "Can't write in '$DIR'"
     echo "Have super-user privileges?"
 
@@ -15,10 +16,12 @@ then
 
     if ! [ "$?" == "0" ];
     then
+        echo ""
         echo "No. You have no permissions for writing there."
         exit 1
         
     else
+        echo ""
         echo "Yes. You have them. Let's continue then."
         exit 2
     fi
