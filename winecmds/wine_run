@@ -7,5 +7,24 @@ then
     echo ""
 
 else
-    "$WINELOADER" $*
+    EXEC=$1
+    ARGS="${@:2}"
+
+    EXEC_FILENAME=$(basename "$EXEC")
+    EXEC_PATH=$(dirname "$EXEC")
+
+
+    echo -n "Launching '$EXEC_FILENAME' "
+    
+    if ! [ "$ARGS" == "" ];
+    then
+        echo "with args: $ARGS ..."
+    else
+        echo "..."
+    fi
+
+
+    cd "$EXEC_PATH"
+    
+    "$WINELOADER" $EXEC_FILENAME $ARGS
 fi

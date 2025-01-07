@@ -23,9 +23,15 @@ then
     else
         echo ""
         echo "Yes. You have them. Let's continue then."
+
+        rm "$DIR/touched"
+
         exit 2
     fi
 fi
 
 echo "You can write with your user."
+
+rm "$DIR/touched"
+
 exit 0

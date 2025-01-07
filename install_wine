@@ -294,7 +294,7 @@ then
 
     echo "$BRANCH" > "$WINE32_DIR/.wine_branch"
     echo "$WINE_VERSION" > "$WINE32_DIR/.wine_version"
-    echo "$ARCH" > "$WINE32_DIR/.wine_arch"
+    echo "i386" > "$WINE32_DIR/.wine_arch"
 
     sudo mv $WINE32_DIR "$INSTALL_DIR/"
 
@@ -325,7 +325,7 @@ then
 
     echo "$BRANCH" > "$WINE64_DIR/.wine_branch"
     echo "$WINE_VERSION" > "$WINE64_DIR/.wine_version"
-    echo "$ARCH" > "$WINE64_DIR/.wine_arch"
+    echo "amd64" > "$WINE64_DIR/.wine_arch"
 
     sudo mv $WINE64_DIR "$INSTALL_DIR/"
 
