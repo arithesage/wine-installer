@@ -113,6 +113,7 @@ $SCRIPT_DIR/update
 
 
 source "$SCRIPT_DIR/aux/check_site"
+SCRIPT_DIR=$(realpath $(dirname $0))
 
 if ! [ "$WINE_URL_OK" == "1" ];
 then
@@ -128,15 +129,25 @@ fi
 
 
 source "$SCRIPT_DIR/aux/packages_arch" --quiet
+SCRIPT_DIR=$(realpath $(dirname $0))
 
 
 if [ "$ARCH" == "" ];
 then
-    echo "No architecture provided. Using host one (${MACHINE_ARCH})."
+    echo "No architecture provided."
+
+    echo -n "The host architecture is "
 
     if [ "$PACKAGES_ARCH" == "amd64" ];
     then
+        echo "amd64, so will install Wine for"
+        echo "both architectures (i386 and amd64)."
+
         ARCH="both"
+    else
+        echo "i386, so will install Wine only for that architecture."
+        
+        ARCH="i386"
     fi
 fi
 
@@ -177,7 +188,7 @@ fi
 
 
 source "$SCRIPT_DIR/aux/get_wine_urls" $WINE_BRANCH $DISTRO_VERSION_NAME --quiet
-
+SCRIPT_DIR=$(realpath $(dirname $0))
 
 
 WINE_DOWNLOAD_DIR="/var/tmp/wine-pkgs/${WINE_VERSION}"
@@ -303,8 +314,10 @@ then
         echo "Creating the default environment for Windows (32 bit)..."
         echo "--------------------------------------------------------"
 
-        source "$SCRIPT_DIR/use_wine" "$INSTALL_DIR/$WINE_32"
-        win_prepare
+        source "$SCRIPT_DIR/use_wine" "$INSTALL_DIR/$WINE32_DIR"
+        SCRIPT_DIR=$(realpath $(dirname $0))
+
+        win_prepare ".wine" win32
         
         echo "$INSTALL_DIR/$WINE32_DIR" > "$HOME/.default_win32_env"
     fi
@@ -331,6 +344,14 @@ then
 
     if ! [ -f "$HOME/.default_win64_env" ];
     then
+        echo "Creating the default environment for Windows (64 bit)..."
+        echo "--------------------------------------------------------"
+
+        source "$SCRIPT_DIR/use_wine" "$INSTALL_DIR/$WINE64_DIR"
+        SCRIPT_DIR=$(realpath $(dirname $0))
+        
+        win_prepare ".wine64" win64
+        
         echo "$INSTALL_DIR/$WINE64_DIR" > "$HOME/.default_win64_env"
     fi
 fi
