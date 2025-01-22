@@ -4,20 +4,20 @@ DIR=$1
 
 echo "Checking if can write in $DIR ..."
 
-touch "$DIR/touched" > /dev/null
+touch "$DIR/touched" &> /dev/null
 
 if ! [ "$?" == "0" ];
 then
     echo ""
     echo "Can't write in '$DIR'"
-    echo "Have super-user privileges?"
+    echo "Have permission for using super-user privileges?"
 
     sudo touch "$DIR/touched" > /dev/null
 
     if ! [ "$?" == "0" ];
     then
         echo ""
-        echo "No. You have no permissions for writing there."
+        echo "It seems not. Sorry, you can't write there."
         exit 1
         
     else
