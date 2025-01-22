@@ -58,6 +58,7 @@ $SUDO cp "$SCRIPT_DIR/use_wine" "$WINESETUP_INSTALL_PATH/"
 $SUDO cp "$SCRIPT_DIR/exec_type" "$WINESETUP_INSTALL_PATH/"
 
 $SUDO cp -r "$SCRIPT_DIR/winecmds" "$WINESETUP_INSTALL_PATH/"
+$SUDO cp -r "$SCRIPT_DIR/aux" "$WINESETUP_INSTALL_PATH/"
 
 $SUDO ln -sf "$WINESETUP_INSTALL_PATH/install_wine" /usr/local/bin/install_wine
 $SUDO ln -sf "$WINESETUP_INSTALL_PATH/download_winetricks" /usr/local/bin/download_winetricks
