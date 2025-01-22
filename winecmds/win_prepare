@@ -15,6 +15,24 @@ function abort
 }
 
 
+function install_defaulter
+{
+    WINEPREFIX=$1
+    WINEARCH=$2
+
+    DEFAULTER=$WINEPREFIX/set_default
+
+    echo "#!/bin/bash" > "$DEFAULTER"
+    echo "" >> "$DEFAULTER"
+    echo "echo \"$WINEPREFIX\" > \$HOME/.default_${WINEARCH}_env" >> "$DEFAULTER"
+    echo "" >> "$DEFAULTER"
+    echo "Wine prefix \"$WINEPREFIX\" is now the default for $WINEARCH." >> "$DEFAULTER"
+
+
+    echo "Execute '$WINEPREFIX/set_default' for set this prefix as the default for $WINEARCH."
+}
+
+
 function install_activator
 {
     WINEPREFIX=$1
@@ -30,6 +48,8 @@ function install_activator
 
     echo "echo \"WINE prefix '$WINEPREFIX' activated.\"" >> "$ACTIVATOR"
     echo "echo \"\"" >> "$ACTIVATOR"
+
+    echo "Execute '$WINEPREFIX/activate' for activate this prefix."
 }
 
 
@@ -62,9 +82,11 @@ function setup_prefix
     then
         echo "Initialization failed. Maybe a permissions problem."
         abort "Do chmod -R 770 in '$1' and try again."
-    fi    
+    fi
 
     install_activator $WINEPREFIX $WINEARCH
+
+
 
     echo "Initialization done."
     echo ""
@@ -90,7 +112,7 @@ function usage
 }
 
 
-if [ "$1" == "-h" ] || [ "$1" == "--h" ];
+if [ "$1" == "-h" ] || [ "$1" == "--help" ];
 then
     usage
     exit 1
@@ -159,20 +181,22 @@ if [ -d "$WIN_ROOT/$PREFIX_NAME/dosdevices" ];
 then
     echo "There is already a WINE prefix named '$PREFIX_NAME' here."
 
+    if [ -d "$WIN_ROOT/$PREFIX_NAME/drive_c/Program Files (x86)" ];
+    then
+        ARCH=win64
+    else
+        ARCH=win32
+    fi
+
     if ! [ -f "$WIN_ROOT/$PREFIX_NAME/activate" ];
     then
         echo "No activator found. One new will be generated."
-
-        if [ -d "$WIN_ROOT/$PREFIX_NAME/drive_c/Program Files (x86)" ];
-        then
-            echo "It seems a win64 prefix."
-            ARCH=win64
-        else
-            echo "It seems a win32 prefix."
-            ARCH=win32
-        fi
-
         install_activator "$WIN_ROOT/$PREFIX_NAME" $ARCH
+    fi
+
+    if ! [ -f "$WIN_ROOT/$PREFIX_NAME/set_default" ];
+    then
+        install_defaulter "$WIN_ROOT/$PREFIX_NAME" $ARCH
     fi
 
 else
