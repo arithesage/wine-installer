@@ -127,16 +127,19 @@ ARCH=$2
 
 if [ "$PREFIX_NAME" == "" ];
 then
+    export WIN_ROOT="$HOME/.local/share/wineprefixes"
     PREFIX_NAME=".wine64"
     ARCH="win64"
 
-elif [ "$1" == "win32" ];
+elif [ "$1" == "win32" ] || [ "$1" == ".wine" ];
 then
-    PREFIX_NAME=".wine32"
+    export WIN_ROOT="$HOME/.local/share/wineprefixes"
+    PREFIX_NAME=".wine"
     ARCH="win32"
 
-elif [ "$1" == "win64" ];
+elif [ "$1" == "win64" ] || [ "$1" == ".wine64" ];
 then
+    export WIN_ROOT="$HOME/.local/share/wineprefixes"
     PREFIX_NAME=".wine64"
     ARCH="win64"
 fi

@@ -86,32 +86,6 @@ echo "$WINESETUP_INSTALL_PATH" > "$HOME/.wine-setup_path"
 $SCRIPT_DIR/update
 
 
-# sudo cp "$SCRIPT_DIR/install_wine" "$WINESETUP_INSTALL_PATH/"
-# sudo cp "$SCRIPT_DIR/download_winetricks" "$WINESETUP_INSTALL_PATH/"
-# sudo cp "$SCRIPT_DIR/extract_iso" "$WINESETUP_INSTALL_PATH/"
-# sudo cp "$SCRIPT_DIR/clean_iso" "$WINESETUP_INSTALL_PATH/"
-# sudo cp "$SCRIPT_DIR/use_wine" "$WINESETUP_INSTALL_PATH/"
-# sudo cp "$SCRIPT_DIR/exec_type" "$WINESETUP_INSTALL_PATH/"
-
-# sudo cp -r "$SCRIPT_DIR/winecmds" "$WINESETUP_INSTALL_PATH/"
-
-# sudo ln -sf "$WINESETUP_INSTALL_PATH/install_wine" /usr/local/bin/install_wine
-# sudo ln -sf "$WINESETUP_INSTALL_PATH/download_winetricks" /usr/local/bin/download_winetricks
-# sudo ln -sf "$WINESETUP_INSTALL_PATH/extract_iso" /usr/local/bin/extract_iso
-# sudo ln -sf "$WINESETUP_INSTALL_PATH/clean_iso" /usr/local/bin/clean_iso
-# sudo ln -sf "$WINESETUP_INSTALL_PATH/use_wine" /usr/local/bin/use_wine
-# sudo ln -sf "$WINESETUP_INSTALL_PATH/exec_type" /usr/local/bin/exec_type
-
-# sudo ln -sf "$WINESETUP_INSTALL_PATH/winecmds/win_prepare" /usr/local/bin/win_prepare
-# sudo ln -sf "$WINESETUP_INSTALL_PATH/winecmds/wincd_eject" /usr/local/bin/wincd_eject
-# sudo ln -sf "$WINESETUP_INSTALL_PATH/winecmds/wincd_load" /usr/local/bin/wincd_load
-# sudo ln -sf "$WINESETUP_INSTALL_PATH/winecmds/win_help" /usr/local/bin/win_help
-# sudo ln -sf "$WINESETUP_INSTALL_PATH/winecmds/wine_run" /usr/local/bin/wine_run
-# sudo ln -sf "$WINESETUP_INSTALL_PATH/winecmds/wine_boot" /usr/local/bin/wine_boot
-# sudo ln -sf "$WINESETUP_INSTALL_PATH/winecmds/wine_cfg" /usr/local/bin/wine_cfg
-# sudo ln -sf "$WINESETUP_INSTALL_PATH/winecmds/wine_file" /usr/local/bin/wine_file
-
-
 source "$SCRIPT_DIR/aux/check_site"
 SCRIPT_DIR=$(realpath $(dirname $0))
 
