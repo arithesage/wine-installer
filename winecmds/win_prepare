@@ -26,8 +26,7 @@ function install_defaulter
     echo "" >> "$DEFAULTER"
     echo "echo \"$WINEPREFIX\" > \$HOME/.default_${WINEARCH}_env" >> "$DEFAULTER"
     echo "" >> "$DEFAULTER"
-    echo "Wine prefix \"$WINEPREFIX\" is now the default for $WINEARCH." >> "$DEFAULTER"
-
+    echo "echo \"Wine prefix '$WINEPREFIX' is now the default for $WINEARCH.\"" >> "$DEFAULTER"
 
     echo "Execute '$WINEPREFIX/set_default' for set this prefix as the default for $WINEARCH."
 }
@@ -129,7 +128,6 @@ if [ "$PREFIX_NAME" == "" ];
 then
     export WIN_ROOT="$HOME/.local/share/wineprefixes"
     PREFIX_NAME=".wine64"
-    ARCH="win64"
 
 elif [ "$1" == "win32" ] || [ "$1" == ".wine" ];
 then
@@ -145,8 +143,11 @@ then
 fi
 
 
-if ! [ "$ARCH" == "" ];
+if [ "$ARCH" == "" ];
 then
+    echo "No architecture specified. Using Win64."
+    ARCH="win64"
+else
     if ! [ "$ARCH" == "win32" ] && ! [ "$ARCH" == "win64" ];
     then
         abort "Invalid architecture '$ARCH'. Must be win32 or win64."
