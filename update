@@ -10,7 +10,7 @@ function abort
     fi
 
     echo ""
-    
+
     exit 1
 }
 
@@ -51,7 +51,6 @@ fi
 
 
 $SUDO cp "$SCRIPT_DIR/install_wine" "$WINESETUP_INSTALL_PATH/"
-$SUDO cp "$SCRIPT_DIR/download_winetricks" "$WINESETUP_INSTALL_PATH/"
 $SUDO cp "$SCRIPT_DIR/extract_iso" "$WINESETUP_INSTALL_PATH/"
 $SUDO cp "$SCRIPT_DIR/clean_iso" "$WINESETUP_INSTALL_PATH/"
 $SUDO cp "$SCRIPT_DIR/use_wine" "$WINESETUP_INSTALL_PATH/"
