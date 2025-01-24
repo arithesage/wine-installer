@@ -55,6 +55,8 @@ fi
 
 
 SCRIPT_DIR=$(realpath $(dirname $0))
+WINE_SETUP_DIR=$SCRIPT_DIR
+
 
 export PATH=$PATH:$SCRIPT_DIR:$SCRIPT_DIR/aux
 
@@ -265,6 +267,9 @@ then
 fi
 
 
+cd "$WINE_SETUP_DIR"
+
+
 if [ "$ARCH" == "i386" ] || [ "$ARCH" == "both" ];
 then
     for package in $(ls *_i386.deb);
@@ -273,7 +278,7 @@ then
 
         if ! [ "$?" == "0" ];
         then
-            abort "Failed extracting '$package' in $WINE_32_DIR'."
+            abort "Failed extracting '$package' in '$WINE_32_DIR'."
         fi
     done
 
@@ -292,8 +297,13 @@ then
         SCRIPT_DIR=$(realpath $(dirname $0))
 
         win_prepare ".wine" win32
-        
-        echo "$INSTALL_DIR/$WINE32_DIR" > "$HOME/.default_win32_env"
+
+        if ! [ "$?" == "0" ];
+        then
+            echo "Failed!"
+        else
+            echo "$INSTALL_DIR/$WINE32_DIR" > "$HOME/.default_win32_env"
+        fi        
     fi
 fi
 
@@ -306,7 +316,7 @@ then
 
         if ! [ "$?" == "0" ];
         then
-            abort "Failed extracting '$package' in /var/tmp/$WINE_64_DIR'."
+            abort "Failed extracting '$package' in '$WINE_64_DIR'."
         fi
     done
 
@@ -325,8 +335,13 @@ then
         SCRIPT_DIR=$(realpath $(dirname $0))
         
         win_prepare ".wine64" win64
-        
-        echo "$INSTALL_DIR/$WINE64_DIR" > "$HOME/.default_win64_env"
+
+        if ! [ "$?" == "0" ];
+        then
+            echo "Failed!"
+        else
+            echo "$INSTALL_DIR/$WINE64_DIR" > "$HOME/.default_win64_env"
+        fi
     fi
 fi
 

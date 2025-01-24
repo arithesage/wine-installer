@@ -1,5 +1,23 @@
 #!/bin/bash
 
+function check_for_valid_wine_installation
+{
+    WINE_PATH=$1
+
+    if ! [ -d "$WINE_PATH/opt/wine-stable" ] && \
+       ! [ -d "$WINE_PATH/opt/wine-staging" ] && \
+       ! [ -d "$WINE_PATH/opt/wine-devel" ];
+    then
+        echo "The specified path '$WINE_PATH' in '$HOME/.default_${WINEARCH}_env'"
+        echo "isn't a vaild Wine installation (from WineHQ or Lutris)."
+
+        return 1
+    fi
+
+    return 0
+}
+
+
 function usage
 {
     echo "Usage: . use_wine <Wine installation path>"

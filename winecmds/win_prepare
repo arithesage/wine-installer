@@ -4,13 +4,13 @@ function abort
 {
     REASON=$1
 
-    if [ "$REASON" == "" ];
+    if ! [ "$REASON" == "" ];
     then
         echo $REASON
     fi
 
     echo ""
-    
+
     exit 1
 }
 
@@ -55,7 +55,7 @@ function install_activator
 function setup_prefix
 {
     export WINEPREFIX=$1
-    export WINEARCH=$2    
+    export WINEARCH=$2
 
     echo "Initializing prefix '$WINEPREFIX' with archtecture $WINEARCH..."
     echo ""
@@ -68,7 +68,19 @@ function setup_prefix
 
         if [ -f "$HOME/.default_${WINEARCH}_env" ];
         then
-            source "$HOME/.default_${WINEARCH}_env"
+            WINE_PATH=$(cat "$HOME/.default_${WINEARCH}_env")
+
+            if ! [ -d "$WINE_PATH/opt/wine-stable" ] && \
+               ! [ -d "$WINE_PATH/opt/wine-staging" ] && \
+               ! [ -d "$WINE_PATH/opt/wine-devel" ];
+            then
+                echo "The specified path '$WINE_PATH' in '$HOME/.default_${WINEARCH}_env'"
+                echo "isn't a vaild Wine installation (from WineHQ or Lutris)."
+
+                abort
+            fi
+
+            source use_wine $(cat "$HOME/.default_${WINEARCH}_env")
         else
             echo "No default Wine environment found for ${WINEARCH}."
             abort "Install at least one win 'install_wine'"
