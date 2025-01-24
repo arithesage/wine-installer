@@ -71,7 +71,7 @@ then
     WINE_DEPS+="libosmesa6:i386 libsdl2-2.0-0:i386 libv4l-0:i386 libva-drm2:i386 "
     WINE_DEPS+="libva-x11-2:i386 libva2:i386 libxcomposite1:i386 libxcursor1:i386 "
     WINE_DEPS+="libxfixes3:i386 libxi6:i386 libxinerama1:i386 libxrandr2:i386 "
-    WINE_DEPS+="libxrender1:i386 libxxf86vm1:i386"
+    WINE_DEPS+="libxrender1:i386 libxxf86vm1:i386 libvulkan1:i386"
 
     sudo apt install -y $WINE_DEPS
 
