@@ -253,12 +253,11 @@ echo "--------------"
 if [ "$INSTALL_DIR" == "" ];
 then
     INSTALL_DIR="/opt"
-    
-    sudo mkdir -p "$INSTALL_DIR"
+fi
 
-elif ! [ -d "$INSTALL_DIR" ];
+if ! [ -d "$INSTALL_DIR" ];
 then
-    mkdir -p "$INSTALL_DIR"
+    sudo mkdir -p "$INSTALL_DIR"
 fi
 
 if ! [ "$?" == "0" ];
@@ -267,7 +266,7 @@ then
 fi
 
 
-cd "$WINE_SETUP_DIR"
+cd "$WINE_DOWNLOAD_DIR"
 
 
 if [ "$ARCH" == "i386" ] || [ "$ARCH" == "both" ];
@@ -288,23 +287,7 @@ then
 
     sudo mv $WINE32_DIR "$INSTALL_DIR/"
 
-    if ! [ -f "$HOME/.default_win32_env" ];
-    then
-        echo "Creating the default environment for Windows (32 bit)..."
-        echo "--------------------------------------------------------"
-
-        source "$SCRIPT_DIR/use_wine" "$INSTALL_DIR/$WINE32_DIR"
-        SCRIPT_DIR=$(realpath $(dirname $0))
-
-        win_prepare ".wine" win32
-
-        if ! [ "$?" == "0" ];
-        then
-            echo "Failed!"
-        else
-            echo "$INSTALL_DIR/$WINE32_DIR" > "$HOME/.default_win32_env"
-        fi        
-    fi
+    echo "Wine (32 bit) installed in /opt/wine-${WINE_VERSION}_i386."
 fi
 
 
@@ -326,34 +309,50 @@ then
 
     sudo mv $WINE64_DIR "$INSTALL_DIR/"
 
-    if ! [ -f "$HOME/.default_win64_env" ];
-    then
-        echo "Creating the default environment for Windows (64 bit)..."
-        echo "--------------------------------------------------------"
-
-        source "$SCRIPT_DIR/use_wine" "$INSTALL_DIR/$WINE64_DIR"
-        SCRIPT_DIR=$(realpath $(dirname $0))
-        
-        win_prepare ".wine64" win64
-
-        if ! [ "$?" == "0" ];
-        then
-            echo "Failed!"
-        else
-            echo "$INSTALL_DIR/$WINE64_DIR" > "$HOME/.default_win64_env"
-        fi
-    fi
-fi
-
-
-if [ "$ARCH" == "i386" ] || [ "$ARCH" == "both" ];
-then
-    echo "Wine (32 bit) installed in /opt/wine-${WINE_VERSION}_i386."
-fi
-
-if [ "$ARCH" == "amd64" ] || [ "$ARCH" == "both" ];
-then
     echo "Wine (64 bit) installed in /opt/wine-${WINE_VERSION}_amd64."
+fi
+
+
+cd "$WINE_SETUP_DIR"
+
+
+if ! [ -f "$HOME/.default_win32_env" ] && \
+     [ "$ARCH" == "i386" ] || [ "$ARCH" == "both" ];
+then
+    echo "Creating the default environment for Windows (32 bit)..."
+    echo "--------------------------------------------------------"
+
+    source "$SCRIPT_DIR/use_wine" "$INSTALL_DIR/$WINE32_DIR"
+    SCRIPT_DIR=$(realpath $(dirname $0))
+
+    win_prepare ".wine" win32
+
+    if ! [ "$?" == "0" ];
+    then
+        echo "Failed!"
+    else
+        echo "$INSTALL_DIR/$WINE32_DIR" > "$HOME/.default_win32_env"
+    fi        
+fi
+
+
+if ! [ -f "$HOME/.default_win64_env" ] && \
+     [ "$ARCH" == "amd64" ] || [ "$ARCH" == "both" ];
+then
+    echo "Creating the default environment for Windows (64 bit)..."
+    echo "--------------------------------------------------------"
+
+    source "$SCRIPT_DIR/use_wine" "$INSTALL_DIR/$WINE64_DIR"
+    SCRIPT_DIR=$(realpath $(dirname $0))
+    
+    win_prepare ".wine64" win64
+
+    if ! [ "$?" == "0" ];
+    then
+        echo "Failed!"
+    else
+        echo "$INSTALL_DIR/$WINE64_DIR" > "$HOME/.default_win64_env"
+    fi
 fi
 
 
@@ -367,8 +366,9 @@ echo "-------------------------"
 sudo apt install -y zenity vulkan-tools
 
 
-cd "$WINESETUP_INSTALL_PATH"
+cd /var/tmp
 wget https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
+sudo mv /var/tmp/winetricks "$WINESETUP_INSTALL_PATH/winetricks"
 
 sudo ln -s "$WINESETUP_INSTALL_PATH/winetricks" "/usr/local/bin/winetricks"
 
