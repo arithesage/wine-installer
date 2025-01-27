@@ -28,6 +28,7 @@ function install_defaulter
     echo "" >> "$DEFAULTER"
     echo "echo \"Wine prefix '$WINEPREFIX' is now the default for $WINEARCH.\"" >> "$DEFAULTER"
 
+    echo ""
     echo "Execute '$WINEPREFIX/set_default' for set this prefix as the default for $WINEARCH."
 }
 
@@ -48,6 +49,7 @@ function install_activator
     echo "echo \"WINE prefix '$WINEPREFIX' activated.\"" >> "$ACTIVATOR"
     echo "echo \"\"" >> "$ACTIVATOR"
 
+    echo ""
     echo "Execute '$WINEPREFIX/activate' for activate this prefix."
 }
 
@@ -98,7 +100,7 @@ function setup_prefix
     install_activator $WINEPREFIX $WINEARCH
 
 
-
+    echo ""
     echo "Initialization done."
     echo ""
 }

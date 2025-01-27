@@ -338,6 +338,7 @@ cd "$WINE_SETUP_DIR"
 if ! [ -f "$HOME/.default_win32_env" ] && \
      [ "$ARCH" == "i386" ] || [ "$ARCH" == "both" ];
 then
+    echo ""
     echo "Creating the default environment for Windows (32 bit)..."
     echo "--------------------------------------------------------"
 
@@ -358,6 +359,7 @@ fi
 if ! [ -f "$HOME/.default_win64_env" ] && \
      [ "$ARCH" == "amd64" ] || [ "$ARCH" == "both" ];
 then
+    echo ""
     echo "Creating the default environment for Windows (64 bit)..."
     echo "--------------------------------------------------------"
 
