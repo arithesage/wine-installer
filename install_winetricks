@@ -1,0 +1,66 @@
+#!/bin/bash
+
+function abort
+{
+    REASON=$1
+
+    if ! [ "$REASON" == "" ];
+    then
+        echo $REASON
+    fi
+
+    echo ""
+    
+    exit 1
+}
+
+
+
+
+WINESETUP_INSTALL_PATH="/opt/wine-setup"
+
+
+if [ -f "$WINESETUP_INSTALL_PATH/winetricks" ];
+then
+    abort "Winetricks is already installed at /opt/wine-setup."
+fi
+
+
+if ! [ -f "$WINESETUP_INSTALL_PATH/use_wine" ];
+then
+    echo "The expected files wasn't found at /opt/wine-setup."
+    abort "Please, run 'install_wine' first to install a Wine version."
+fi
+
+if ! [ -f "/usr/bin/zenity" ];
+then
+    echo ""
+    echo "Installing zenity first ..."
+    echo "---------------------------"
+
+    # Zenity is needed for showing winetricks GUI.
+    # Vulkan Tools aren't needed, but they can be useful to check if you have
+    # Vulkan support.
+    sudo apt install -y zenity vulkan-tools
+
+    if ! [ "$?" == "0" ];
+    then
+        abort "Failed!"
+    fi
+fi
+
+
+echo ""
+echo "Installing winetricks ..."
+echo "-------------------------"
+
+cd /var/tmp
+
+wget https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
+sudo mv /var/tmp/winetricks "$WINESETUP_INSTALL_PATH/winetricks"
+sudo chmod +x "$WINESETUP_INSTALL_PATH/winetricks"
+
+sudo ln -s "$WINESETUP_INSTALL_PATH/winetricks" "/usr/local/bin/winetricks"
+
+echo ""
+echo "Done!"

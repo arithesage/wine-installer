@@ -356,21 +356,7 @@ then
 fi
 
 
-echo ""
-echo "Installing winetricks ..."
-echo "-------------------------"
-
-# Zenity is needed for showing winetricks GUI.
-# Vulkan Tools aren't needed, but they can be useful to check if you have
-# Vulkan support.
-sudo apt install -y zenity vulkan-tools
-
-
-cd /var/tmp
-wget https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
-sudo mv /var/tmp/winetricks "$WINESETUP_INSTALL_PATH/winetricks"
-
-sudo ln -s "$WINESETUP_INSTALL_PATH/winetricks" "/usr/local/bin/winetricks"
+$SCRIPT_DIR/install_winetricks
 
 
 echo ""
