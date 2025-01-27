@@ -85,6 +85,9 @@ then
 
 
         export WINESERVER="$WINE_BINARIES/wineserver"
+        
+        # Needed by winetricks
+        export WINE=$WINELOADER
 
 
         echo "Activated Wine $WINE_BRANCH ($WINE_VERSION): $WINE_PATH"
