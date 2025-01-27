@@ -51,6 +51,7 @@ fi
 
 
 $SUDO cp "$SCRIPT_DIR/install_wine" "$WINESETUP_INSTALL_PATH/"
+$SUDO cp "$SCRIPT_DIR/install_winetricks" "$WINESETUP_INSTALL_PATH/"
 $SUDO cp "$SCRIPT_DIR/extract_iso" "$WINESETUP_INSTALL_PATH/"
 $SUDO cp "$SCRIPT_DIR/clean_iso" "$WINESETUP_INSTALL_PATH/"
 $SUDO cp "$SCRIPT_DIR/use_wine" "$WINESETUP_INSTALL_PATH/"
@@ -60,7 +61,7 @@ $SUDO cp -r "$SCRIPT_DIR/winecmds" "$WINESETUP_INSTALL_PATH/"
 $SUDO cp -r "$SCRIPT_DIR/aux" "$WINESETUP_INSTALL_PATH/"
 
 $SUDO ln -sf "$WINESETUP_INSTALL_PATH/install_wine" /usr/local/bin/install_wine
-$SUDO ln -sf "$WINESETUP_INSTALL_PATH/download_winetricks" /usr/local/bin/download_winetricks
+$SUDO ln -sf "$WINESETUP_INSTALL_PATH/install_winetricks" /usr/local/bin/download_winetricks
 $SUDO ln -sf "$WINESETUP_INSTALL_PATH/extract_iso" /usr/local/bin/extract_iso
 $SUDO ln -sf "$WINESETUP_INSTALL_PATH/clean_iso" /usr/local/bin/clean_iso
 $SUDO ln -sf "$WINESETUP_INSTALL_PATH/use_wine" /usr/local/bin/use_wine

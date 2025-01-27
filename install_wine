@@ -55,6 +55,16 @@ fi
 
 
 SCRIPT_DIR=$(realpath $(dirname $0))
+
+
+# Needed when running an already installed script
+# because the auxiliary ones aren't in the same folder
+# that the symlink.
+if [ "$SCRIPT_DIR" == "/usr/local/bin" ];
+then
+    SCRIPT_DIR="/opt/wine-setup"
+fi
+
 WINE_SETUP_DIR=$SCRIPT_DIR
 
 
@@ -66,12 +76,18 @@ WINE_VERSION=$2
 ARCH=$3
 INSTALL_DIR=$4
 
+
 DISTRO_VERSION_NAME=$(os_version_name)
 
 WINESETUP_INSTALL_PATH="/opt/wine-setup"
 
+if [ "$INSTALL_DIR" == "" ];
+then
+    INSTALL_DIR="/opt"
+fi
 
-if [ -f "$INSTALL_DIR/wine-${WINE_VERSION}_${ARCH}/opt/wine-${WINE_BRANCH}" ];
+
+if [ -d "$INSTALL_DIR/wine-${WINE_VERSION}_${ARCH}/opt/wine-${WINE_BRANCH}" ];
 then
     abort "The requested Wine version is already installed."
 fi
@@ -85,11 +101,14 @@ fi
 echo "$WINESETUP_INSTALL_PATH" > "$HOME/.wine-setup_path"
 
 
-$SCRIPT_DIR/update
+if ! [ "$SCRIPT_DIR" == "/opt/wine-setup" ];
+then
+    $SCRIPT_DIR/update
+fi
 
 
 source "$SCRIPT_DIR/aux/check_site"
-SCRIPT_DIR=$(realpath $(dirname $0))
+SCRIPT_DIR=$WINE_SETUP_DIR
 
 if ! [ "$WINE_URL_OK" == "1" ];
 then
@@ -105,7 +124,7 @@ fi
 
 
 source "$SCRIPT_DIR/aux/packages_arch" --quiet
-SCRIPT_DIR=$(realpath $(dirname $0))
+SCRIPT_DIR=$WINE_SETUP_DIR
 
 
 if [ "$ARCH" == "" ];
@@ -164,7 +183,7 @@ fi
 
 
 source "$SCRIPT_DIR/aux/get_wine_urls" $WINE_BRANCH $DISTRO_VERSION_NAME --quiet
-SCRIPT_DIR=$(realpath $(dirname $0))
+SCRIPT_DIR=$WINE_SETUP_DIR
 
 
 WINE_DOWNLOAD_DIR="/var/tmp/wine-pkgs/${WINE_VERSION}"
@@ -285,7 +304,7 @@ then
     echo "$WINE_VERSION" > "$WINE32_DIR/.wine_version"
     echo "i386" > "$WINE32_DIR/.wine_arch"
 
-    sudo mv $WINE32_DIR "$INSTALL_DIR/"
+    sudo cp -r $WINE32_DIR "$INSTALL_DIR/"
 
     echo "Wine (32 bit) installed in /opt/wine-${WINE_VERSION}_i386."
 fi
@@ -307,7 +326,7 @@ then
     echo "$WINE_VERSION" > "$WINE64_DIR/.wine_version"
     echo "amd64" > "$WINE64_DIR/.wine_arch"
 
-    sudo mv $WINE64_DIR "$INSTALL_DIR/"
+    sudo cp -r $WINE64_DIR "$INSTALL_DIR/"
 
     echo "Wine (64 bit) installed in /opt/wine-${WINE_VERSION}_amd64."
 fi
@@ -323,7 +342,7 @@ then
     echo "--------------------------------------------------------"
 
     source "$SCRIPT_DIR/use_wine" "$INSTALL_DIR/$WINE32_DIR"
-    SCRIPT_DIR=$(realpath $(dirname $0))
+    SCRIPT_DIR=$WINE_SETUP_DIR
 
     win_prepare ".wine" win32
 
@@ -343,7 +362,7 @@ then
     echo "--------------------------------------------------------"
 
     source "$SCRIPT_DIR/use_wine" "$INSTALL_DIR/$WINE64_DIR"
-    SCRIPT_DIR=$(realpath $(dirname $0))
+    SCRIPT_DIR=$WINE_SETUP_DIR
     
     win_prepare ".wine64" win64
 
@@ -360,7 +379,7 @@ $SCRIPT_DIR/install_winetricks
 
 
 echo ""
-echo "All donde."
+echo "All done."
 echo ""
 
 
