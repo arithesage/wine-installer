@@ -10,7 +10,7 @@ function abort
     fi
 
     echo ""
-    
+
     exit 1
 }
 
@@ -352,7 +352,7 @@ then
         echo "Failed!"
     else
         echo "$INSTALL_DIR/$WINE32_DIR" > "$HOME/.default_win32_env"
-    fi        
+    fi
 fi
 
 
@@ -365,7 +365,7 @@ then
 
     source "$SCRIPT_DIR/use_wine" "$INSTALL_DIR/$WINE64_DIR"
     SCRIPT_DIR=$WINE_SETUP_DIR
-    
+
     win_prepare ".wine64" win64
 
     if ! [ "$?" == "0" ];

@@ -10,7 +10,7 @@ function abort
     fi
 
     echo ""
-    
+
     exit 1
 }
 
@@ -39,9 +39,24 @@ then
     echo "---------------------------"
 
     # Zenity is needed for showing winetricks GUI.
-    # Vulkan Tools aren't needed, but they can be useful to check if you have
-    # Vulkan support.
-    sudo apt install -y zenity vulkan-tools
+    # Mesa-Utils and Vulkan Tools aren't needed, but they can be useful to check
+    # if you have working 3D acceleration and Vulkan support.
+    sudo apt install -y zenity mesa-utils vulkan-tools
+
+    if ! [ "$?" == "0" ];
+    then
+        abort "Failed!"
+    fi
+fi
+
+
+if ! [ -f "/usr/bin/cabextract" ];
+then
+    echo ""
+    echo "Installing some needed packages ..."
+    echo "-----------------------------------"
+
+    sudo apt install -y cabextract unzip zstd
 
     if ! [ "$?" == "0" ];
     then
@@ -57,8 +72,11 @@ echo "-------------------------"
 cd /var/tmp
 
 wget https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
+
 sudo mv /var/tmp/winetricks "$WINESETUP_INSTALL_PATH/winetricks"
-sudo chmod +x "$WINESETUP_INSTALL_PATH/winetricks"
+
+sudo chown root:root "$WINESETUP_INSTALL_PATH/winetricks"
+sudo chmod 775 "$WINESETUP_INSTALL_PATH/winetricks"
 
 sudo ln -s "$WINESETUP_INSTALL_PATH/winetricks" "/usr/local/bin/winetricks"
 
