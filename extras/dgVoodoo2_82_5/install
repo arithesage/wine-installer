@@ -1,0 +1,20 @@
+#!/bin/bash
+
+SCRIPT_DIR=$(realpath $(dirname $0))
+
+
+
+if [ "$WINEPREFIX" == "" ];
+then
+    echo "Activate a Wine prefix first."
+    exit 1
+fi
+
+
+if [ "$WINEARCH" == "win32" ];
+then
+
+else
+
+fi
+
