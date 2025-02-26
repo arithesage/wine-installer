@@ -78,7 +78,7 @@ sudo mv /var/tmp/winetricks "$WINESETUP_INSTALL_PATH/winetricks"
 sudo chown root:root "$WINESETUP_INSTALL_PATH/winetricks"
 sudo chmod 775 "$WINESETUP_INSTALL_PATH/winetricks"
 
-sudo ln -s "$WINESETUP_INSTALL_PATH/winetricks" "/usr/local/bin/winetricks"
+sudo ln -sf "$WINESETUP_INSTALL_PATH/winetricks" "/usr/local/bin/winetricks"
 
 echo ""
 echo "Done!"
