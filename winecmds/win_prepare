@@ -44,6 +44,9 @@ function install_activator
     echo "export WINEARCH=$WINEARCH" >> "$ACTIVATOR"
     echo "export WIN_C=\"$WINEPREFIX/drive_c\"" >> "$ACTIVATOR"
     echo "export WIN_D=\"$WINEPREFIX/drive_d\"" >> "$ACTIVATOR"
+
+    cp "$ACTIVATOR" /tmp/last_active_wine_prefix
+
     echo "export WINEDEBUG=-all" >> "$ACTIVATOR"
 
     echo "echo \"WINE prefix '$WINEPREFIX' activated.\"" >> "$ACTIVATOR"

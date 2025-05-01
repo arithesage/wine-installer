@@ -1,0 +1,13 @@
+#!/bin/bash
+
+if [ -f /tmp/last_active_wine_prefix ];
+then
+    . /tmp/last_active_wine_prefix
+
+    echo "You can now access now to: "
+    echo "- WINEPREFIX: Prefix path"
+    echo "- WINEARCH: Prefix architecture"
+    echo "- WIN_C: C: drive path"
+    echo "- WIN_D: D: drive path (only after loading discs)"
+    echo ""
+fi
