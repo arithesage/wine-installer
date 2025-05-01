@@ -69,7 +69,7 @@ $SUDO ln -sf "$WINESETUP_INSTALL_PATH/clean_iso" /usr/local/bin/clean_iso
 $SUDO ln -sf "$WINESETUP_INSTALL_PATH/use_wine" /usr/local/bin/use_wine
 $SUDO ln -sf "$WINESETUP_INSTALL_PATH/aux/exec_type" /usr/local/bin/exec_type
 
-$SUDO ln -sf "$WINESETUP_INSTALL_PATH/winecmds/start" /usr/local/bin/start
+$SUDO ln -sf "$WINESETUP_INSTALL_PATH/winecmds/win_start" /usr/local/bin/win_start
 $SUDO ln -sf "$WINESETUP_INSTALL_PATH/winecmds/win_prepare" /usr/local/bin/win_prepare
 $SUDO ln -sf "$WINESETUP_INSTALL_PATH/winecmds/wincd_eject" /usr/local/bin/wincd_eject
 $SUDO ln -sf "$WINESETUP_INSTALL_PATH/winecmds/wincd_load" /usr/local/bin/wincd_load
