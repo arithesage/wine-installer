@@ -55,7 +55,7 @@ $SUDO cp "$SCRIPT_DIR/install_winetricks" "$WINESETUP_INSTALL_PATH/"
 $SUDO cp "$SCRIPT_DIR/extract_iso" "$WINESETUP_INSTALL_PATH/"
 $SUDO cp "$SCRIPT_DIR/clean_iso" "$WINESETUP_INSTALL_PATH/"
 $SUDO cp "$SCRIPT_DIR/use_wine" "$WINESETUP_INSTALL_PATH/"
-$SUDO cp "$SCRIPT_DIR/exec_type" "$WINESETUP_INSTALL_PATH/"
+$SUDO cp "$SCRIPT_DIR/aux/exec_type" "$WINESETUP_INSTALL_PATH/aux/"
 
 $SUDO cp -r "$SCRIPT_DIR/winecmds" "$WINESETUP_INSTALL_PATH/"
 $SUDO cp -r "$SCRIPT_DIR/aux" "$WINESETUP_INSTALL_PATH/"
@@ -68,16 +68,17 @@ $SUDO ln -sf "$WINESETUP_INSTALL_PATH/install_winetricks" /usr/local/bin/downloa
 $SUDO ln -sf "$WINESETUP_INSTALL_PATH/extract_iso" /usr/local/bin/extract_iso
 $SUDO ln -sf "$WINESETUP_INSTALL_PATH/clean_iso" /usr/local/bin/clean_iso
 $SUDO ln -sf "$WINESETUP_INSTALL_PATH/use_wine" /usr/local/bin/use_wine
-$SUDO ln -sf "$WINESETUP_INSTALL_PATH/exec_type" /usr/local/bin/exec_type
+$SUDO ln -sf "$WINESETUP_INSTALL_PATH/aux/exec_type" /usr/local/bin/exec_type
 
+$SUDO ln -sf "$WINESETUP_INSTALL_PATH/winecmds/start" /usr/local/bin/start
 $SUDO ln -sf "$WINESETUP_INSTALL_PATH/winecmds/win_prepare" /usr/local/bin/win_prepare
 $SUDO ln -sf "$WINESETUP_INSTALL_PATH/winecmds/wincd_eject" /usr/local/bin/wincd_eject
 $SUDO ln -sf "$WINESETUP_INSTALL_PATH/winecmds/wincd_load" /usr/local/bin/wincd_load
 $SUDO ln -sf "$WINESETUP_INSTALL_PATH/winecmds/win_help" /usr/local/bin/win_help
-$SUDO ln -sf "$WINESETUP_INSTALL_PATH/winecmds/wine_run" /usr/local/bin/wine_run
 $SUDO ln -sf "$WINESETUP_INSTALL_PATH/winecmds/wine_boot" /usr/local/bin/wine_boot
 $SUDO ln -sf "$WINESETUP_INSTALL_PATH/winecmds/wine_cfg" /usr/local/bin/wine_cfg
 $SUDO ln -sf "$WINESETUP_INSTALL_PATH/winecmds/wine_file" /usr/local/bin/wine_file
+
 
 echo ""
 echo "Done."

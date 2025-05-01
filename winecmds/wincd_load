@@ -17,10 +17,10 @@ function abort
 
 function usage
 {
-    echo "wincd_load <iso path>"
+    echo "Usage: wincd_load <iso path>"
     echo "Loads the given ISO in the prefix's D drive."
     echo ""
-    
+
     abort
 }
 

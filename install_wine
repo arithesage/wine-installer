@@ -17,7 +17,7 @@ function abort
 
 function usage
 {
-    echo "Usage: install-wine <branch> <version> [i386|amd64|both] [inst dir]"
+    echo "Usage: install-wine [branch] [version] [i386|amd64|both] [inst dir]"
     echo ""
     echo "Branch is one of these: stable, devel or staging."
     echo ""
@@ -25,6 +25,9 @@ function usage
     echo ""
     echo "Also, if host architecture is amd64, the packages for both"
     echo "architectures will be downloaded."
+    echo ""
+    echo "If no parameters are provided, the ones in .default_wine"
+    echo "will be used."
     echo ""
     echo "Packages will be installed by default in"
     echo "/opt/wine-{version}_{arch} but you can specify"
@@ -45,7 +48,7 @@ function usage
 }
 
 
-if [ "$1" == "" ] || [ "$1" == "-h" ] || [ "$1" == "--help" ];
+if [ "$1" == "-h" ] || [ "$1" == "--help" ];
 then
     usage
     abort
@@ -70,11 +73,20 @@ WINE_SETUP_DIR=$SCRIPT_DIR
 
 export PATH=$PATH:$SCRIPT_DIR:$SCRIPT_DIR/aux
 
+if [ "$1" == "" ];
+then
+    source "$SCRIPT_DIR/.default_wine"
 
-WINE_BRANCH=$1
-WINE_VERSION=$2
-ARCH=$3
-INSTALL_DIR=$4
+    echo "The default Wine will be installed:"
+    echo "wine-$WINE_BRANCH ($WINE_VERSION) for $ARCH architecture/s."
+    echo ""
+
+else
+    WINE_BRANCH=$1
+    WINE_VERSION=$2
+    ARCH=$3
+    INSTALL_DIR=$4
+fi
 
 
 DISTRO_VERSION_NAME=$(os_version_name)
@@ -85,6 +97,7 @@ if [ "$INSTALL_DIR" == "" ];
 then
     INSTALL_DIR="/opt"
 fi
+
 
 
 if [ -d "$INSTALL_DIR/wine-${WINE_VERSION}_${ARCH}/opt/wine-${WINE_BRANCH}" ];

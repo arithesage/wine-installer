@@ -87,7 +87,10 @@ then
         export WINESERVER="$WINE_BINARIES/wineserver"
         
         # Needed by winetricks
-        export WINE=$WINELOADER
+        export WINE="$WINELOADER"
+
+        alias wine="$WINELOADER"
+        alias winecfg="\"$WINELOADER\" \"$WINE_UTILS/winecfg.exe\""
 
 
         echo "Activated Wine $WINE_BRANCH ($WINE_VERSION): $WINE_PATH"
@@ -98,15 +101,6 @@ then
             export PATH=$PATH:$SCRIPT_DIR
 
             echo "Added temporally '$SCRIPT_DIR' to PATH."
-            echo ""
-        fi
-
-
-        if [ "$(which wine_run)" == "" ];
-        then
-            export PATH=$PATH:$SCRIPT_DIR/winecmds
-
-            echo "Added temporally '$SCRIPT_DIR/winecmds' to PATH."
             echo ""
         fi
     fi

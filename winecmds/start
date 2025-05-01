@@ -1,0 +1,247 @@
+#!/bin/bash
+
+
+abort()
+{
+    MESSAGE=$1
+
+    if ! [ "$MESSAGE" == "" ];
+    then
+        echo "$MESSAGE"
+        echo ""
+    fi
+
+    exit 1
+}
+
+
+# Loads the Wine environment associated to the given executable
+# if there is any.
+#
+# The file needs to be named {exec filename}.wine_env.
+# For example: UnrealTournament.wine_env
+#
+activate_exec_env()
+{
+    EXEC=$1
+
+    echo "Checking if a .wine_env for this executable exists..."
+
+    EXEC_FILENAME=$(basename "$EXEC" .exe)
+    ENV_FILE=$SCRIPT_PATH/$EXEC_FILENAME.wine_env
+
+    if [ -f "$ENV_FILE" ];
+    then
+        source "$ENV_FILE"
+
+        if ! [ "$WINE_VERSION" == "" ];
+        then
+            . use_wine /opt/wine-$WINE_VERSION-$WINE_ARCH
+
+        elif ! [ "$WINE_PATH" == "" ];
+        then
+            . use_wine "$WINE_PATH"
+        fi
+
+        if [ "$?" == "0" ];
+        then
+            echo "Using wine-${WINE_BRANCH} (${WINE_VERSION})"
+        else
+            abort "Failed loading Wine environment for '$EXEC'."
+        fi
+    fi
+}
+
+
+# Checks if a Wine enviroment file exists in the current folder
+# and loads it. The file is named .wine_env.
+activate_app_env()
+{
+    if [ -f "$SCRIPT_PATH/.wine_env" ];
+    then
+        source "$SCRIPT_PATH/.wine_env"
+
+        if ! [ "$WINELOADER" == "" ] && ! [ "$WINEPREFIX" == "" ];
+        then
+            echo -n "Using wine-${WINE_BRANCH} (${WINE_VERSION})"
+            echo "with prefix '$WINEPREFIX'."
+            echo ""
+
+        else
+            abort "WINELOADER and WINEPREFIX are missing from .wine_env."
+            abort "Cannot launch anything."
+        fi
+
+    else
+        echo "Cannot check the Wine environment to use: .wine_env is missing."
+        echo "Will use the default one for the executable architecture."
+        echo ""
+
+        if ! [ -f "$HOME/.default_win32_env" ] && ! [ -f "$HOME/.default_win64_env" ];
+        then
+            echo "Cannot determine the default wine for use."
+            abort "~/.default_win32_env and ~/.default_win64_env are both missing."
+        fi
+
+        USE_DEFAULT_WINE=1
+    fi
+}
+
+
+check_exec_arch()
+{
+    EXEC_FILE=$1
+
+    echo "Checking if file '$EXEC_FILE' is a Windows executable..."    
+
+    FILE_TYPE=$(exec_type "$EXEC_FILE")
+
+    if [ "$FILE_TYPE" == "windows-i386" ];
+    then
+        export WINE32_NEEDED=1
+
+        echo "Want to launch a Windows 32 bit executable."
+        echo ""
+
+    elif [ "$FILE_TYPE" == "windows-amd64" ];
+    then
+        export WINE64_NEEDED=1
+
+        echo "Want to launch a Windows 64 bit executable."
+        echo ""
+    else
+        abort "The given file isn't a Windows 32 or 64 bit executable."
+    fi
+}
+
+
+
+
+usage()
+{
+    echo "Usage: start <executable>"
+    echo ""
+}
+
+
+
+
+if [ "$1" == "-h" ] || [ "$1" == "--help" ];
+then
+    usage
+    abort
+fi
+
+
+
+
+EXEC_PATH=$(realpath "$1")
+ARGS="${@:2}"
+
+EXEC_DIR=$(dirname "$EXEC_PATH")
+EXEC_BASENAME=$(basename "$EXEC_PATH" .exe)
+
+
+check_exec_arch "$EXEC_PATH"
+
+
+if [ "$WINE32_NEEDED" == "0" ] && [ "$WINE64_NEEDED" == ""];
+then
+    abort "Not a Windows executable."
+fi
+
+
+APP_WINENV=$EXEC_DIR/.winenv
+EXEC_WINENV=$EXEC_DIR/$EXEC_BASENAME.winenv
+
+
+if ! [ -f "$EXEC_WINENV" ];
+then
+    echo "No Wine environment associated with the executable was found."
+else
+    . "$EXEC_WINENV"
+
+    EXEC_WINENV_LOADED=1
+    echo "Loaded Wine environment '$EXEC_WINENV'."
+fi
+
+
+if ! [ -f "$APP_WINENV" ];
+then
+    echo "No Wine environment associated with this app was found."
+
+else
+    . "$APP_WINENV"
+
+    APP_WINENV_LOADED=1
+    echo "Loaded Wine environment '$APP_WINENV'."
+fi
+
+
+if ! [ "$WINE_PATH" == "" ];
+then
+    if [ -f "$WINE_PATH/.wine_version" ];
+    then
+        . use_wine "$WINE_PATH"
+    fi
+
+elif ! [ "$WINE_BRANCH" == "" ] && ! [ "$WINE_VERSION" == "" ];
+then
+    if [ "$WINE32_NEEDED" == "1" ];
+    then        
+        if [ -d "/opt/wine-${WINE_VERSION}_i386/opt/wine-${WINE_BRANCH}" ];
+        then
+            . use_wine /opt/wine-${WINE_VERSION}
+        fi
+
+    elif [ "$WINE64_NEEDED" == "1" ];
+    then
+        if [ -d "/opt/wine-${WINE_VERSION}_amd64/opt/wine-${WINE_BRANCH}" ];
+        then
+            . use_wine /opt/wine-${WINE_VERSION}
+        fi
+    fi
+
+else
+    echo "Using the default Wine for the executable architecture."
+    echo ""
+
+    if [ "$WINE32_NEEDED" == "1" ];
+    then
+        if ! [ "$HOME/.default_win32_env" ];
+        then
+            echo "Cannot find ~/.default_win32_env."
+            abort "Unable to determine the Wine installation to use."
+        else
+            . use_wine $(cat ~/.default_win32_env)
+        fi
+    fi
+fi
+
+
+if [ "$WINEPREFIX" == "" ];
+then
+    if [ "$WINE32_NEEDED" == "1" ];
+    then
+        . ~/.wine/activate
+
+    elif [ "$WINE64_NEEDED" == "1" ];
+    then
+        . ~/.wine64/activate
+    fi
+fi
+
+
+if ! [ "$WINELOADER" == "" ] && ! [ "$WINEPREFIX" == "" ];
+then
+    echo -n "Launching '$EXEC_PATH'"
+
+    if ! [ "$ARGS" == "" ];
+    then
+        echo " with args '$ARGS'..."
+    fi
+
+    echo ""
+
+    $WINELOADER "$EXEC" $ARGS
+fi
