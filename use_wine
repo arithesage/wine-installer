@@ -89,8 +89,13 @@ then
         # Needed by winetricks
         export WINE="$WINELOADER"
 
+
         alias wine="$WINELOADER"
+        alias wineboot="\"$WINELOADER\" \"$WINE_UTILS/wineboot.exe\"" 
         alias winecfg="\"$WINELOADER\" \"$WINE_UTILS/winecfg.exe\""
+        alias winefile="\"$WINELOADER\" \"$WINE_UTILS/winefile.exe\""
+        alias reg="\"$WINELOADER\" \"$WINE_UTILS/reg.exe\""
+        alias regedit="\"$WINELOADER\" \"$WINE_UTILS/regedit.exe\""
 
 
         echo "Activated Wine $WINE_BRANCH ($WINE_VERSION): $WINE_PATH"
