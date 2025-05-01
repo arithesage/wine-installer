@@ -221,13 +221,18 @@ fi
 
 if [ "$WINEPREFIX" == "" ];
 then
-    if [ "$WINE32_NEEDED" == "1" ];
+    if [ "$WINE32_NEEDED" == "1" ] && [ -d "$HOME/.wine" ];
     then
         . ~/.wine/activate
 
-    elif [ "$WINE64_NEEDED" == "1" ];
+    elif [ "$WINE64_NEEDED" == "1" ] && [ -d "$HOME/wine64" ];
     then
         . ~/.wine64/activate
+    fi
+
+    if [ "$WINEPREFIX" == "" ];
+    then
+        abort "Failed to load default Wine prefix."
     fi
 fi
 
