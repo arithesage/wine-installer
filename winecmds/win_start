@@ -15,6 +15,41 @@ abort()
 }
 
 
+# Checks if a Wine enviroment file exists in the current folder
+# and loads it. The file is named .wine_env.
+activate_app_env()
+{
+    if [ -f "$SCRIPT_PATH/.wine_env" ];
+    then
+        source "$SCRIPT_PATH/.wine_env"
+
+        if ! [ "$WINELOADER" == "" ] && ! [ "$WINEPREFIX" == "" ];
+        then
+            echo -n "Using wine-${WINE_BRANCH} (${WINE_VERSION})"
+            echo "with prefix '$WINEPREFIX'."
+            echo ""
+
+        else
+            abort "WINELOADER and WINEPREFIX are missing from .wine_env."
+            abort "Cannot launch anything."
+        fi
+
+    else
+        echo "Cannot check the Wine environment to use: .wine_env is missing."
+        echo "Will use the default one for the executable architecture."
+        echo ""
+
+        if ! [ -f "$HOME/.default_win32_env" ] && ! [ -f "$HOME/.default_win64_env" ];
+        then
+            echo "Cannot determine the default wine for use."
+            abort "~/.default_win32_env and ~/.default_win64_env are both missing."
+        fi
+
+        USE_DEFAULT_WINE=1
+    fi
+}
+
+
 # Loads the Wine environment associated to the given executable
 # if there is any.
 #
@@ -53,41 +88,6 @@ activate_exec_env()
 }
 
 
-# Checks if a Wine enviroment file exists in the current folder
-# and loads it. The file is named .wine_env.
-activate_app_env()
-{
-    if [ -f "$SCRIPT_PATH/.wine_env" ];
-    then
-        source "$SCRIPT_PATH/.wine_env"
-
-        if ! [ "$WINELOADER" == "" ] && ! [ "$WINEPREFIX" == "" ];
-        then
-            echo -n "Using wine-${WINE_BRANCH} (${WINE_VERSION})"
-            echo "with prefix '$WINEPREFIX'."
-            echo ""
-
-        else
-            abort "WINELOADER and WINEPREFIX are missing from .wine_env."
-            abort "Cannot launch anything."
-        fi
-
-    else
-        echo "Cannot check the Wine environment to use: .wine_env is missing."
-        echo "Will use the default one for the executable architecture."
-        echo ""
-
-        if ! [ -f "$HOME/.default_win32_env" ] && ! [ -f "$HOME/.default_win64_env" ];
-        then
-            echo "Cannot determine the default wine for use."
-            abort "~/.default_win32_env and ~/.default_win64_env are both missing."
-        fi
-
-        USE_DEFAULT_WINE=1
-    fi
-}
-
-
 check_exec_arch()
 {
     EXEC_FILE=$1
@@ -115,6 +115,21 @@ check_exec_arch()
 }
 
 
+check_requirements()
+{
+    if ! [ -f "$HOME/.wine-setup_path" ];
+    then
+        abort "Wine-Setup seems to be missing."
+    fi
+
+
+    if ! [ -f "$HOME/.default_win32_env" ] && 
+       ! [ -f "$HOME/.default_win64_env" ];
+    then
+        echo "Default envs for Win32 and Win64 are missing."
+        abort "No Wine installation available?"
+    fi
+}
 
 
 usage()
@@ -133,6 +148,7 @@ then
 fi
 
 
+check_requirements
 
 
 EXEC_PATH=$(realpath "$1")
