@@ -28,6 +28,42 @@ function usage
 }
 
 
+wine()
+{
+    "$WINELOADER"
+}
+
+
+wineboot()
+{
+    "\"$WINELOADER\" \"$WINE_UTILS/wineboot.exe\""
+}
+
+
+winecfg()
+{
+    "\"$WINELOADER\" \"$WINE_UTILS/winecfg.exe\""
+}
+
+
+winefile()
+{
+    "\"$WINELOADER\" \"$WINE_UTILS/winefile.exe\""
+}
+
+
+reg()
+{
+    "\"$WINELOADER\" \"$WINE_UTILS/reg.exe\""
+}
+
+
+regedit()
+{
+    "\"$WINELOADER\" \"$WINE_UTILS/regedit.exe\""
+}
+
+
 SCRIPT_DIR=$(realpath $(dirname ${BASH_SOURCE[0]}))
 
 
@@ -85,13 +121,22 @@ then
 
 
         export WINESERVER="$WINE_BINARIES/wineserver"
-        
+
         # Needed by winetricks
         export WINE="$WINELOADER"
 
 
+        # Aliases are not available to scripts, but exported functions are
+        export -f wine
+        export -f wineboot
+        export -f winecfg
+        export -f winefile
+        export -f reg
+        export -f regedit
+
+
         alias wine="$WINELOADER"
-        alias wineboot="\"$WINELOADER\" \"$WINE_UTILS/wineboot.exe\"" 
+        alias wineboot="\"$WINELOADER\" \"$WINE_UTILS/wineboot.exe\""
         alias winecfg="\"$WINELOADER\" \"$WINE_UTILS/winecfg.exe\""
         alias winefile="\"$WINELOADER\" \"$WINE_UTILS/winefile.exe\""
         alias reg="\"$WINELOADER\" \"$WINE_UTILS/reg.exe\""
