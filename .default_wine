@@ -1,3 +1,5 @@
+#!/bin/bash
+
 export WINE_BRANCH=staging
 export WINE_VERSION=10.7
 export ARCH=both

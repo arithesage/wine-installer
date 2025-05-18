@@ -1,13 +1,15 @@
 #!/bin/bash
 
-echo -n "Checking if Wine site is available... "
+echo -n "Checking if WineHQ site is available... "
 curl -s https://dl.winehq.org > /dev/null
 
 if [ "$?" == "0" ];
 then
     WINE_URL_OK=1
+
     echo "OK"
     echo ""
+    
 else
     echo "ERROR"
     echo ""

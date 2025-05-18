@@ -1,0 +1,16 @@
+#!/bin/bash
+
+export WINE_ENV_PATH=$(cat "$HOME/.wine-env_path")
+
+alias install_wine="$WINE_ENV_PATH/install_wine"
+alias install_winetricks="$WINE_ENV_PATH/install_winetricks"
+alias extract_iso="$WINE_ENV_PATH/extract_iso"
+alias clean_iso="$WINE_ENV_PATH/clean_iso"
+alias exec_type="$WINE_ENV_PATH/exec_type"
+
+alias win_help="$WINE_ENV_PATH/win_help"
+alias win_prepare="$WINE_ENV_PATH/win_prepare"
+alias win_start="$WINE_ENV_PATH/win_start"
+alias wincd_eject="$WINE_ENV_PATH/wincd_eject"
+alias wincd_load="$WINE_ENV_PATH/wincd_load"
+alias wine_load="$WINE_ENV_PATH/wine_load"

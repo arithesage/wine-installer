@@ -1,0 +1,109 @@
+#!/bin/bash
+
+abort()
+{
+    REASON=$1
+
+    if ! [ "$REASON" == "" ];
+    then
+        echo $REASON
+    fi
+
+    echo ""
+
+    exit 1
+}
+
+
+usage()
+{
+    echo "Usage: setup [custom wine-env path]"
+    echo ""
+    echo "If no custom path is provided, the default one, /opt/wine-env,"
+    echo "will be used."
+    echo ""
+    echo "A ~/.wine-env_path file will be created with the path."
+    echo ""
+}
+
+
+SCRIPT_DIR=$(realpath $(dirname $0))
+
+
+
+
+if [ "$1" == "-h" ] || [ "$1" == "--help" ];
+then
+    usage
+    abort
+
+elif ! [ "$1" == "" ];
+then
+    WINE_ENV_PATH="$1"
+
+    echo "Installing/updating wine-env installation in '$WINE_ENV_PATH'."
+    echo ""
+
+else
+    WINE_ENV_PATH="/opt/wine-env"
+
+    echo "Installing/updating default wine-env installation."
+    echo ""
+fi
+
+
+if [ -d "$SCRIPT_DIR/.git" ];
+then
+    echo "Checking first if you have the latest updates from the repo..."
+    echo "--------------------------------------------------------------"
+
+    cd "$SCRIPT_DIR"
+    git pull
+fi
+
+
+"$SCRIPT_DIR/aux/test_write_permissions_in" "$WINE_ENV_PATH"
+
+if [ "$?" == "1" ];
+then
+    abort "Cannot continue."
+
+else
+    if [ "$?" == "0" ];
+    then
+        echo "Installing in a owned path."
+        SUDO=""
+
+    else
+        echo "Installing as super-user."
+        SUDO="sudo"
+    fi
+fi
+
+
+echo "Installing updated scripts and fixing permissions..."
+echo "----------------------------------------------------"
+
+if ! [ -d "$WINE_ENV_PATH" ];
+then
+    $SUDO mkdir -p "$WINE_ENV_PATH"
+fi
+
+$SUDO cp "$SCRIPT_DIR/install_wine" "$WINE_ENV_PATH/"
+$SUDO cp "$SCRIPT_DIR/install_winetricks" "$WINE_ENV_PATH/"
+$SUDO cp "$SCRIPT_DIR/extract_iso" "$WINE_ENV_PATH/"
+$SUDO cp "$SCRIPT_DIR/clean_iso" "$WINE_ENV_PATH/"
+
+$SUDO cp -r "$SCRIPT_DIR/winecmds" "$WINE_ENV_PATH/"
+$SUDO cp -r "$SCRIPT_DIR/aux" "$WINE_ENV_PATH/"
+
+$SUDO chown -R root:root "$WINE_ENV_PATH"
+$SUDO chmod -R 755 "$WINE_ENV_PATH"
+
+cp "$SCRIPT_DIR/.wine_env" "$HOME/.wine_env"
+
+echo "$WINE_ENV_PATH > "$HOME/.wine-env_path
+
+
+echo "Done."
+echo ""

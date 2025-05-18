@@ -55,27 +55,21 @@ then
 fi
 
 
-SCRIPT_DIR=$(realpath $(dirname $0))
-
-
-
-
-# Needed when running an already installed script
-# because the auxiliary ones aren't in the same folder
-# that the symlink.
-if [ "$SCRIPT_DIR" == "/usr/local/bin" ];
+if ! [ -f "$HOME/.wine-env_path" ];
 then
-    SCRIPT_DIR="/opt/wine-setup"
+    abort "No ~/.wine-env_path file was found. Please run setup first."
 fi
 
-WINE_SETUP_DIR=$SCRIPT_DIR
+
+source "$HOME/.wine_env"
 
 
-export PATH=$PATH:$SCRIPT_DIR:$SCRIPT_DIR/aux
+export PATH=$PATH:$WINE_ENV_PATH:$WINE_ENV_PATH/aux
+
 
 if [ "$1" == "" ];
 then
-    source "$SCRIPT_DIR/.default_wine"
+    source "$WINE_ENV_PATH/.default_wine"
 
     echo "The default Wine will be installed:"
     echo "wine-$WINE_BRANCH ($WINE_VERSION) for $ARCH architecture/s."
@@ -91,13 +85,11 @@ fi
 
 DISTRO_VERSION_NAME=$(os_version_name)
 
-WINESETUP_INSTALL_PATH="/opt/wine-setup"
 
 if [ "$INSTALL_DIR" == "" ];
 then
     INSTALL_DIR="/opt"
 fi
-
 
 
 if [ -d "$INSTALL_DIR/wine-${WINE_VERSION}_${ARCH}/opt/wine-${WINE_BRANCH}" ];
@@ -106,22 +98,8 @@ then
 fi
 
 
-if ! [ -d "$WINESETUP_INSTALL_PATH" ];
-then
-    sudo mkdir -p "$WINESETUP_INSTALL_PATH"
-fi
+source "$WINE_ENV_PATH/aux/check_winehq_site"
 
-echo "$WINESETUP_INSTALL_PATH" > "$HOME/.wine-setup_path"
-
-
-if ! [ "$SCRIPT_DIR" == "/opt/wine-setup" ];
-then
-    $SCRIPT_DIR/update
-fi
-
-
-source "$SCRIPT_DIR/aux/check_site"
-SCRIPT_DIR=$WINE_SETUP_DIR
 
 if ! [ "$WINE_URL_OK" == "1" ];
 then
@@ -136,8 +114,7 @@ then
 fi
 
 
-source "$SCRIPT_DIR/aux/packages_arch" --quiet
-SCRIPT_DIR=$WINE_SETUP_DIR
+source "$WINE_ENV_PATH/aux/packages_arch" --quiet
 
 
 if [ "$ARCH" == "" ];
@@ -154,7 +131,7 @@ then
         ARCH="both"
     else
         echo "i386, so will install Wine only for that architecture."
-        
+
         ARCH="i386"
     fi
 fi
@@ -173,6 +150,7 @@ then
     if [ "$ARCH" == "i386" ] || [ "$ARCH" == "both" ];
     then
         sudo dpkg --add-architecture i386
+
         echo "Added i386 architecture to dpkg if wasn't available yet."
         echo ""
     fi
@@ -181,6 +159,7 @@ then
      ! [ "$PACKAGES_ARCH" == "amd64" ];
     then
         sudo dpkg --add-architecture amd64
+
         echo "Added amd64 architecture to dpkg if wasn't available yet."
         echo ""
     fi
@@ -195,12 +174,10 @@ fi
 
 
 
-source "$SCRIPT_DIR/aux/get_wine_urls" $WINE_BRANCH $DISTRO_VERSION_NAME --quiet
-SCRIPT_DIR=$WINE_SETUP_DIR
+source "$WINE_ENV_PATH/aux/get_wine_urls" $WINE_BRANCH $DISTRO_VERSION_NAME --quiet
 
 
 WINE_DOWNLOAD_DIR="/var/tmp/wine-pkgs/${WINE_VERSION}"
-
 
 
 if ! [ -d "${WINE_DOWNLOAD_DIR}" ];
@@ -345,7 +322,7 @@ then
 fi
 
 
-cd "$WINE_SETUP_DIR"
+cd "$WINE_ENV_PATH"
 
 
 if ! [ -f "$HOME/.default_win32_env" ] && \
@@ -355,8 +332,7 @@ then
     echo "Creating the default environment for Windows (32 bit)..."
     echo "--------------------------------------------------------"
 
-    source "$SCRIPT_DIR/winecmds/wine_load" "$INSTALL_DIR/$WINE32_DIR"
-    SCRIPT_DIR=$WINE_SETUP_DIR
+    source "$WINE_ENV_PATH/winecmds/wine_load" "$INSTALL_DIR/$WINE32_DIR"    
 
     win_prepare ".wine" win32
 
@@ -376,8 +352,7 @@ then
     echo "Creating the default environment for Windows (64 bit)..."
     echo "--------------------------------------------------------"
 
-    source "$SCRIPT_DIR/winecmds/wine_load" "$INSTALL_DIR/$WINE64_DIR"
-    SCRIPT_DIR=$WINE_SETUP_DIR
+    source "$WINE_ENV_PATH/winecmds/wine_load" "$INSTALL_DIR/$WINE64_DIR"    
 
     win_prepare ".wine64" win64
 
@@ -390,19 +365,11 @@ then
 fi
 
 
-$SCRIPT_DIR/install_winetricks
+$WINE_ENV_PATH/install_winetricks
 
 
 echo ""
 echo "All done."
 echo ""
-
-
-
-
-
-
-
-
 
 
