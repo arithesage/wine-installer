@@ -117,11 +117,11 @@ then
     echo "export PATH=\$HOME/.local/bin:\$PATH" >> "$HOME/.environment"
 
     ln -sf "$WINE_ENV_PATH/install_wine" "$HOME/.local/bin/install_wine"
-    ln -sf "$WINE_ENV_PATH/winecmds/load_wine" "$HOME/.local/bin/load_wine"
+    ln -sf "$WINE_ENV_PATH/winecmds/wine_load" "$HOME/.local/bin/wine_load"
 
 else
     sudo ln -sf "$WINE_ENV_PATH/install_wine" "/usr/local/bin/install_wine"
-    sudo ln -sf "$WINE_ENV_PATH/winecmds/load_wine" "/usr/local/bin/load_wine"
+    sudo ln -sf "$WINE_ENV_PATH/winecmds/wine_load" "/usr/local/bin/wine_load"
 fi
 
 cp "$SCRIPT_DIR/.wine_env" "$HOME/.wine_env"
