@@ -92,7 +92,7 @@ function setup_prefix
         fi
     fi
 
-    wine_boot
+    wineboot
 
     if ! [ "$?" == "0" ];
     then
@@ -126,6 +126,14 @@ function usage
     echo "~\$/.wine32 and ~\$/.wine64 (for 32 and 64 bits respectively)."
     echo ""
 }
+
+
+SCRIPT_DIR=$(realpath $(dirname $0))
+
+
+
+
+source "$SCRIPT_DIR/wine_cmds"
 
 
 if [ "$1" == "-h" ] || [ "$1" == "--help" ];

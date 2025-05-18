@@ -15,6 +15,13 @@ abort()
 }
 
 
+SCRIPT_DIR=$(realpath $(dirname $0))
+
+
+
+source "$SCRIPT_DIR/wine_cmds"
+
+
 # Checks if a Wine enviroment file exists in the current folder
 # and loads it. The file is named .wine_env.
 activate_app_env()
@@ -264,5 +271,5 @@ then
 
     echo ""
 
-    $WINELOADER "$EXEC_PATH" $ARGS
+    wine "$EXEC_PATH" $ARGS
 fi

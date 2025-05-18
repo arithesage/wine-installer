@@ -1,0 +1,45 @@
+#!/bin/bash
+
+wine()
+{
+    "$WINELOADER"
+}
+
+
+wineboot()
+{
+    "\"$WINELOADER\" \"$WINE_UTILS/wineboot.exe\""
+}
+
+
+winecfg()
+{
+    "\"$WINELOADER\" \"$WINE_UTILS/winecfg.exe\""
+}
+
+
+winefile()
+{
+    "\"$WINELOADER\" \"$WINE_UTILS/winefile.exe\""
+}
+
+
+reg()
+{
+    "\"$WINELOADER\" \"$WINE_UTILS/reg.exe\""
+}
+
+
+regedit()
+{
+    "\"$WINELOADER\" \"$WINE_UTILS/regedit.exe\""
+}
+
+
+# Aliases are not available to scripts, so we export them as functions
+export -f wine
+export -f wineboot
+export -f winecfg
+export -f winefile
+export -f reg
+export -f regedit

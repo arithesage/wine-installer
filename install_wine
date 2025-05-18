@@ -55,9 +55,9 @@ then
 fi
 
 
-
-
 SCRIPT_DIR=$(realpath $(dirname $0))
+
+
 
 
 # Needed when running an already installed script
@@ -355,7 +355,7 @@ then
     echo "Creating the default environment for Windows (32 bit)..."
     echo "--------------------------------------------------------"
 
-    source "$SCRIPT_DIR/use_wine" "$INSTALL_DIR/$WINE32_DIR"
+    source "$SCRIPT_DIR/winecmds/wine_load" "$INSTALL_DIR/$WINE32_DIR"
     SCRIPT_DIR=$WINE_SETUP_DIR
 
     win_prepare ".wine" win32
@@ -376,7 +376,7 @@ then
     echo "Creating the default environment for Windows (64 bit)..."
     echo "--------------------------------------------------------"
 
-    source "$SCRIPT_DIR/use_wine" "$INSTALL_DIR/$WINE64_DIR"
+    source "$SCRIPT_DIR/winecmds/wine_load" "$INSTALL_DIR/$WINE64_DIR"
     SCRIPT_DIR=$WINE_SETUP_DIR
 
     win_prepare ".wine64" win64
