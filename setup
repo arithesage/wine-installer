@@ -62,7 +62,7 @@ then
 fi
 
 
-"$SCRIPT_DIR/aux/test_write_permissions_in" "$WINE_ENV_PATH"
+"$SCRIPT_DIR/aux/test_write_permissions_in" $(dirname "$WINE_ENV_PATH")
 
 if [ "$?" == "1" ];
 then
