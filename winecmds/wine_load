@@ -87,13 +87,13 @@ then
         export WINESERVER="$WINE_BINARIES/wineserver"
 
         # Needed by winetricks
-        export WINE="$WINELOADER"        
+        export WINE="$WINELOADER"
 
 
         # The aliases will be available for the current shell session
         # but not for the other scripts. They will include wine_cmds
         # instead.
-        
+
         alias wine="$WINELOADER"
         alias wineboot="\"$WINELOADER\" \"$WINE_UTILS/wineboot.exe\""
         alias winecfg="\"$WINELOADER\" \"$WINE_UTILS/winecfg.exe\""
@@ -104,13 +104,5 @@ then
 
         echo "Activated Wine $WINE_BRANCH ($WINE_VERSION): $WINE_PATH"
         echo ""
-
-        if [ "$(which win_prepare)" == "" ];
-        then
-            export PATH=$PATH:$SCRIPT_DIR
-
-            echo "Added temporally '$SCRIPT_DIR' to PATH."
-            echo ""
-        fi
     fi
 fi

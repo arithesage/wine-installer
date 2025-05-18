@@ -8,31 +8,31 @@ wine()
 
 wineboot()
 {
-    "\"$WINELOADER\" \"$WINE_UTILS/wineboot.exe\""
+    "$WINELOADER" "$WINE_UTILS/wineboot.exe"
 }
 
 
 winecfg()
 {
-    "\"$WINELOADER\" \"$WINE_UTILS/winecfg.exe\""
+    "$WINELOADER" "$WINE_UTILS/winecfg.exe"
 }
 
 
 winefile()
 {
-    "\"$WINELOADER\" \"$WINE_UTILS/winefile.exe\""
+    "$WINELOADER" "$WINE_UTILS/winefile.exe"
 }
 
 
 reg()
 {
-    "\"$WINELOADER\" \"$WINE_UTILS/reg.exe\""
+    "$WINELOADER" "$WINE_UTILS/reg.exe"
 }
 
 
 regedit()
 {
-    "\"$WINELOADER\" \"$WINE_UTILS/regedit.exe\""
+    "$WINELOADER" "$WINE_UTILS/regedit.exe"
 }
 
 

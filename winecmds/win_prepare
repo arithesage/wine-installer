@@ -85,7 +85,7 @@ function setup_prefix
                 abort
             fi
 
-            source use_wine $(cat "$HOME/.default_${WINEARCH}_env")
+            source wine_load $(cat "$HOME/.default_${WINEARCH}_env")
         else
             echo "No default Wine environment found for ${WINEARCH}."
             abort "Install at least one win 'install_wine'"
@@ -155,7 +155,7 @@ then
     ARCH="win64"
 
 elif [ "$1" == "win32" ] || [ "$1" == ".wine" ];
-then    
+then
     PREFIX_NAME=".wine"
     ARCH="win32"
 

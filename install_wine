@@ -332,7 +332,7 @@ then
     echo "Creating the default environment for Windows (32 bit)..."
     echo "--------------------------------------------------------"
 
-    source "$WINE_ENV_PATH/winecmds/wine_load" "$INSTALL_DIR/$WINE32_DIR"    
+    source "$WINE_ENV_PATH/winecmds/wine_load" "$INSTALL_DIR/$WINE32_DIR"
 
     win_prepare ".wine" win32
 
@@ -352,7 +352,7 @@ then
     echo "Creating the default environment for Windows (64 bit)..."
     echo "--------------------------------------------------------"
 
-    source "$WINE_ENV_PATH/winecmds/wine_load" "$INSTALL_DIR/$WINE64_DIR"    
+    source "$WINE_ENV_PATH/winecmds/wine_load" "$INSTALL_DIR/$WINE64_DIR"
 
     win_prepare ".wine64" win64
 

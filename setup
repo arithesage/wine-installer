@@ -62,7 +62,8 @@ then
 fi
 
 
-"$SCRIPT_DIR/aux/test_write_permissions_in" $(dirname "$WINE_ENV_PATH")
+WINE_ENV_PATH_PARENT=$(dirname $WINE_ENV_PATH)
+"$SCRIPT_DIR/aux/test_write_permissions_in" $WINE_ENV_PATH_PARENT
 
 if [ "$?" == "1" ];
 then
@@ -81,6 +82,7 @@ else
 fi
 
 
+echo ""
 echo "Installing updated scripts and fixing permissions..."
 echo "----------------------------------------------------"
 
@@ -91,8 +93,6 @@ fi
 
 $SUDO cp "$SCRIPT_DIR/install_wine" "$WINE_ENV_PATH/"
 $SUDO cp "$SCRIPT_DIR/install_winetricks" "$WINE_ENV_PATH/"
-$SUDO cp "$SCRIPT_DIR/extract_iso" "$WINE_ENV_PATH/"
-$SUDO cp "$SCRIPT_DIR/clean_iso" "$WINE_ENV_PATH/"
 
 $SUDO cp -r "$SCRIPT_DIR/winecmds" "$WINE_ENV_PATH/"
 $SUDO cp -r "$SCRIPT_DIR/aux" "$WINE_ENV_PATH/"
@@ -102,7 +102,7 @@ $SUDO chmod -R 755 "$WINE_ENV_PATH"
 
 cp "$SCRIPT_DIR/.wine_env" "$HOME/.wine_env"
 
-echo "$WINE_ENV_PATH > "$HOME/.wine-env_path
+echo "$WINE_ENV_PATH" > "$HOME/.wine-env_path"
 
 
 echo "Done."
