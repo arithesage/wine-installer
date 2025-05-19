@@ -131,5 +131,25 @@ cp "$SCRIPT_DIR/.wine_env" "$HOME/.wine_env"
 echo "$WINE_ENV_PATH" > "$HOME/.wine-env_path"
 
 
-echo "Done."
+if ! [ -f "/etc/apt/keyrings/winehq-archive.key" ];
+then
+    echo "WineHQ key not found in keyring. Setting up APT..."
+    echo ""
+
+    "$SCRIPT_DIR/prepare_apt"
+fi
+
+
+if ! [ -f "$HOME/.wine32_deps_installed" ];
+then
+    echo "Installing Wine dependencies. They may be installed yet, but"
+    echo "cannot find the ~/.wine_deps_installed file."
+    echo ""
+
+    "$SCRIPT_DIR/install_deps"
+fi
+
+
+echo "Basic setup is done. Now is time to install a Wine version"
+echo "if you have not done it yet."
 echo ""

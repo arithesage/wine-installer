@@ -38,7 +38,7 @@ then
 fi
 
 
-if ! [ -f "/usr/lib/x86_64-linux-gnu/libvkd3d.so.1" ];
+if ! [ -f "$HOME/.wine64_deps_installed" ];
 then
     echo ""
     echo "Installing dependencies for Wine (64 bits) ..."
@@ -63,5 +63,12 @@ then
 
     sudo apt install -y $WINE_DEPS
 
-    exit $?
+    RESULT=$?
+
+    if [ "$?" == "0" ];
+    then
+        touch "$HOME/.wine64_deps_installed"
+    fi
+
+    exit $RESULT
 fi

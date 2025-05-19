@@ -213,6 +213,32 @@ then
 fi
 
 
+if [ "$ARCH" == "i386" ] || [ "$ARCH" == "both" ];
+then
+    if ! [ -f "$HOME/.wine32_deps_installed" ];
+    then
+        echo "Installing Wine32 dependencies. They may be installed yet, but"
+        echo "cannot find the ~/.wine32_deps_installed file."
+        echo ""
+
+        "$SCRIPT_DIR/install_deps"
+    fi
+fi
+
+
+if [ "$ARCH" == "amd64" ] || [ "$ARCH" == "both" ];
+then
+    if ! [ -f "$HOME/.wine64_deps_installed" ];
+    then
+        echo "Installing Wine64 dependencies. They may be installed yet, but"
+        echo "cannot find the ~/.wine64_deps_installed file."
+        echo ""
+
+        "$SCRIPT_DIR/install_deps"
+    fi
+fi
+
+
 echo ""
 echo "Downloading wine-${WINE_BRANCH} (${WINE_VERSION})..."
 echo "-----------------------------------------------------"

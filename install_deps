@@ -25,13 +25,20 @@ export PATH="$SCRIPT_DIR/aux":$PATH
 
 ARCH=$(packages_arch)
 OS_NAME=$(os_name)
-OS_VERSION_NAME=$(os_version_name)
+OS_VERSION=$(os_version_name)
 
 
-echo "Installing Wine dependencies for $OS_NAME ($OS_VERSION_NAME)."
+echo "Installing Wine dependencies for $OS_NAME ($OS_VERSION)."
 echo ""
 
 
-"$SCRIPT_DIR/install_deps_for_${ARCH}_${OS_VERSION_NAME}"
+DEPS_INSTALL_SCRIPT="$SCRIPT_DIR/install_deps_for_${ARCH}_${OS_VERSION}"
 
+if ! [ -f "$DEPS_INSTALL_SCRIPT" ];
+then
+    echo "This distro or version have not been tested."
+    abort "You can try running one of the install_deps scripts."
+else
+    "$DEPS_INSTALL_SCRIPT"
+fi
 

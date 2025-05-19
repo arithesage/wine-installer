@@ -40,7 +40,7 @@ then
 fi
 
 
-if ! [ -f "/usr/lib/arm-linux-gnueabihf/libvkd3d.so.1" ];
+if ! [ -f "$HOME/.wine32_deps_installed" ];
 then
     echo ""
     echo "Installing dependencies for Wine (32 bits) in ARM ..."
@@ -65,5 +65,12 @@ then
 
     sudo apt install -y $WINE_DEPS
 
-    exit $?
+    RESULT=$?
+
+    if [ "$?" == "0" ];
+    then
+        touch "$HOME/.wine32_deps_installed"
+    fi
+
+    exit $RESULT
 fi
