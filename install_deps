@@ -1,0 +1,37 @@
+#!/bin/bash
+
+
+abort()
+{
+    MESSAGE=$1
+
+    if ! [ "$MESSAGE" == "" ];
+    then
+        echo "$MESSAGE"
+        echo ""
+    fi
+
+    exit 1
+}
+
+
+SCRIPT_DIR=$(realpath $(dirname $0))
+
+
+
+
+export PATH="$SCRIPT_DIR/aux":$PATH
+
+
+ARCH=$(packages_arch)
+OS_NAME=$(os_name)
+OS_VERSION_NAME=$(os_version_name)
+
+
+echo "Installing Wine dependencies for $OS_NAME ($OS_VERSION_NAME)."
+echo ""
+
+
+"$SCRIPT_DIR/install_deps_for_${ARCH}_${OS_VERSION_NAME}"
+
+
