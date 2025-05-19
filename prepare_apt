@@ -4,13 +4,13 @@ function abort
 {
     REASON=$1
 
-    if [ "$REASON" == "" ];
+    if ! [ "$REASON" == "" ];
     then
         echo $REASON
     fi
 
     echo ""
-    
+
     exit 1
 }
 
@@ -19,14 +19,14 @@ function enable_debian_contrib
 {
     TMP_SOURCES_LIST="/var/tmp/debian-contrib.sources"
     SOURCES_LIST="/etc/apt/sources.list.d/debian-contrib.sources"
-    
+
     DEB_VERSION=$DISTRO_VERSION_NAME
 
     echo "Types: deb" > $TMP_SOURCES_LIST
     echo "URIs: http://deb.debian.org/debian" >> $TMP_SOURCES_LIST
     echo "Suites: ${DEB_VERSION} ${DEB_VERSION}-updates" >> $TMP_SOURCES_LIST
     echo "Components: contrib" >> $TMP_SOURCES_LIST
-    
+
     echo "Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg" \
             >> $TMP_SOURCES_LIST
 
@@ -57,7 +57,9 @@ echo "Checking if APT is ready for downloading Wine and Winetricks..."
 echo ""
 
 
+export DISTRO_NAME=$(os_name)
 export DISTRO_VERSION_NAME=$(os_version_name)
+
 
 source "$SCRIPT_DIR/aux/get_wine_urls"
 
@@ -118,40 +120,31 @@ else
 fi
 
 
-if [ -f "/etc/apt/sources.list" ];
+if [ "$DISTRO_NAME" == "debian" ];
 then
-    cat /etc/apt/sources.list | grep contrib > /dev/null
-    CONTRIB_ENABLED=$?
+    if [ -f "/etc/apt/sources.list" ];
+    then
+        cat /etc/apt/sources.list | grep contrib > /dev/null
+        CONTRIB_ENABLED=$?
 
-elif [ -f "/etc/apt/sources.list.d/debian.sources" ];
-then
-    cat /etc/apt/sources.list.d/debian.sources | grep contrib > /dev/null
-    CONTRIB_ENABLED=$?
-fi
+    elif [ -f "/etc/apt/sources.list.d/debian.sources" ];
+    then
+        cat /etc/apt/sources.list.d/debian.sources | grep contrib > /dev/null
+        CONTRIB_ENABLED=$?
+    fi
 
 
-if ! [ "$CONTRIB_ENABLED" == "0" ];
-then
-    echo "Didn't found 'contrib' enabled in sources list. Trying to enable..."
-    echo ""
+    if ! [ "$CONTRIB_ENABLED" == "0" ];
+    then
+        echo "Didn't found 'contrib' enabled in sources list. Trying to enable..."
+        echo ""
 
-    enable_debian_contrib
+        enable_debian_contrib
+    fi
 fi
 
 
 echo "All seems ready for APT downloading."
 echo ""
-
-
-
-
-
-
-
-
-
-
-
-
 
 
