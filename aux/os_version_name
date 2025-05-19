@@ -1,4 +1,4 @@
 #!/bin/bash
 
-echo $(cat /etc/os-release | grep CODENAME | cut -d '=' -f 2)
+echo $(cat /etc/os-release | grep VERSION_CODENAME= | cut -d '=' -f 2)
 echo ""
