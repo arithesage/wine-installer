@@ -217,11 +217,11 @@ if [ "$ARCH" == "i386" ] || [ "$ARCH" == "both" ];
 then
     if ! [ -f "$HOME/.wine32_deps_installed" ];
     then
-        echo "Installing Wine32 dependencies. They may be installed yet, but"
-        echo "cannot find the ~/.wine32_deps_installed file."
+        echo "Installing Wine (32 bits) dependencies. They may be installed yet"
+        echo "yet, but cannot find the ~/.wine32_deps_installed file."
         echo ""
 
-        "$SCRIPT_DIR/install_deps"
+        "$SCRIPT_DIR/install_wine32_deps"
     fi
 fi
 
@@ -230,11 +230,11 @@ if [ "$ARCH" == "amd64" ] || [ "$ARCH" == "both" ];
 then
     if ! [ -f "$HOME/.wine64_deps_installed" ];
     then
-        echo "Installing Wine64 dependencies. They may be installed yet, but"
-        echo "cannot find the ~/.wine64_deps_installed file."
+        echo "Installing Wine (64 bits) dependencies. They may be installed"
+        echo "yet, but cannot find the ~/.wine64_deps_installed file."
         echo ""
 
-        "$SCRIPT_DIR/install_deps"
+        "$SCRIPT_DIR/install_wine64_deps"
     fi
 fi
 

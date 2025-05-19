@@ -23,16 +23,11 @@ SCRIPT_DIR=$(realpath $(dirname $0))
 export PATH="$SCRIPT_DIR/aux":$PATH
 
 
-ARCH=$(packages_arch)
 OS_NAME=$(os_name)
 OS_VERSION=$(os_version_name)
 
 
-echo "Installing Wine dependencies for $OS_NAME ($OS_VERSION)."
-echo ""
-
-
-DEPS_INSTALL_SCRIPT="$SCRIPT_DIR/install_deps_for_${ARCH}_${OS_VERSION}"
+DEPS_INSTALL_SCRIPT="$SCRIPT_DIR/install_deps_for_amd64_${OS_VERSION}"
 
 if ! [ -f "$DEPS_INSTALL_SCRIPT" ];
 then

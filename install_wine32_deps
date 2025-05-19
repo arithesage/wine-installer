@@ -1,0 +1,39 @@
+#!/bin/bash
+
+
+abort()
+{
+    MESSAGE=$1
+
+    if ! [ "$MESSAGE" == "" ];
+    then
+        echo "$MESSAGE"
+        echo ""
+    fi
+
+    exit 1
+}
+
+
+SCRIPT_DIR=$(realpath $(dirname $0))
+
+
+
+
+export PATH="$SCRIPT_DIR/aux":$PATH
+
+
+OS_NAME=$(os_name)
+OS_VERSION=$(os_version_name)
+
+
+DEPS_INSTALL_SCRIPT="$SCRIPT_DIR/install_deps_for_i386_${OS_VERSION}"
+
+if ! [ -f "$DEPS_INSTALL_SCRIPT" ];
+then
+    echo "This distro or version have not been tested."
+    abort "You can try running one of the install_deps scripts."
+else
+    "$DEPS_INSTALL_SCRIPT"
+fi
+
