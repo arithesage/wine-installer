@@ -133,9 +133,6 @@ SCRIPT_DIR=$(realpath $(dirname $0))
 
 
 
-source "$SCRIPT_DIR/wine_cmds"
-
-
 if [ "$1" == "-h" ] || [ "$1" == "--help" ];
 then
     usage
@@ -143,6 +140,7 @@ then
 fi
 
 
+source "$SCRIPT_DIR/wine_cmds"
 
 
 PREFIX_NAME=$1

@@ -101,6 +101,9 @@ then
         alias reg="\"$WINELOADER\" \"$WINE_UTILS/reg.exe\""
         alias regedit="\"$WINELOADER\" \"$WINE_UTILS/regedit.exe\""
 
+        # Make also available the wine-env commands.
+        source $HOME/.wine_env
+
 
         echo "Activated Wine $WINE_BRANCH ($WINE_VERSION): $WINE_PATH"
         echo ""

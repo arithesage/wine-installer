@@ -365,7 +365,49 @@ then
 fi
 
 
-$WINE_ENV_PATH/install_winetricks
+echo ""
+echo "Checking for winetricks and installing if not present ..."
+echo "---------------------------------------------------------"
+
+if [ -f "$WINE_ENV_PATH/cmds/winetricks" ];
+then
+    echo "Winetricks is already installed."    
+else
+    if ! [ -f "/usr/bin/zenity" ] || ! [ -f "/usr/bin/cabextract" ];
+    then
+        echo "Some packages are needed for everything to work correctly,"
+        echo "like zenity, cabextract, unzip and zstd."
+        echo ""
+        echo "They will be installed first if aren't already present."
+        echo "----------------------------------------------------------"
+
+        # Zenity is needed for showing winetricks GUI.
+        # The others are used for extracting windows packages.
+
+        sudo apt install -y zenity cabextract unzip zstd
+
+        if ! [ "$?" == "0" ];
+        then
+            abort "Failed!"
+        fi
+    fi
+
+    echo ""
+    echo "Installing winetricks ..."
+    echo "-------------------------"
+
+    cd /var/tmp
+
+    wget https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
+
+    sudo mv /var/tmp/winetricks "$WINE_ENV_PATH/cmds/winetricks"
+
+    sudo chown root:root "$WINE_ENV_PATH/cmds/winetricks"
+    sudo chmod 755 "$WINE_ENV_PATH/cmds/winetricks"
+
+    echo ""
+    echo "Done."
+fi
 
 
 echo ""
