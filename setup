@@ -126,6 +126,7 @@ else
     sudo ln -sf "$WINE_ENV_PATH/cmds/wine_load" "/usr/local/bin/wine_load"
 fi
 
+
 cp "$SCRIPT_DIR/.wine_env" "$HOME/.wine_env"
 
 echo "$WINE_ENV_PATH" > "$HOME/.wine-env_path"
@@ -137,16 +138,6 @@ then
     echo ""
 
     "$SCRIPT_DIR/prepare_apt"
-fi
-
-
-if ! [ -f "$HOME/.wine32_deps_installed" ];
-then
-    echo "Installing Wine dependencies. They may be installed yet, but"
-    echo "cannot find the ~/.wine_deps_installed file."
-    echo ""
-
-    "$SCRIPT_DIR/install_deps"
 fi
 
 
