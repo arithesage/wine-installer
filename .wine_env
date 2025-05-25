@@ -9,7 +9,6 @@ alias exec_type="$WINE_ENV_PATH/aux/exec_type"
 
 alias win_help="$WINE_ENV_PATH/cmds/win_help"
 alias win_prepare="$WINE_ENV_PATH/cmds/win_prepare"
-alias win_start="$WINE_ENV_PATH/cmds/win_start"
 alias wincd_eject="$WINE_ENV_PATH/cmds/wincd_eject"
 alias wincd_load="$WINE_ENV_PATH/cmds/wincd_load"
 alias wine_load="$WINE_ENV_PATH/cmds/wine_load"
