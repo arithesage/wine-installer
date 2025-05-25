@@ -133,10 +133,6 @@ function usage
 }
 
 
-SCRIPT_DIR=$(realpath $(dirname $0))
-
-
-
 
 if [ "$1" == "-h" ] || [ "$1" == "--help" ];
 then
@@ -145,7 +141,19 @@ then
 fi
 
 
-source "$SCRIPT_DIR/wine_cmds"
+if ! [ -f "$HOME/.wine-env_path" ] || ! [ -f "$HOME/.wine_env" ];
+then
+    abort "No ~/.wine-env_path or ~/.wine_env files found. Run setup first."
+fi
+
+
+if [ "$WINE_ENV_PATH" == "" ];
+then
+    source "$HOME/.wine_env"
+fi
+
+
+source "$WINE_ENV_PATH/wine_cmds"
 
 
 PREFIX_NAME=$1

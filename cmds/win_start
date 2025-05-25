@@ -15,13 +15,6 @@ abort()
 }
 
 
-SCRIPT_DIR=$(realpath $(dirname $0))
-
-
-
-source "$SCRIPT_DIR/wine_cmds"
-
-
 # Checks if a Wine enviroment file exists in the current folder
 # and loads it. The file is named .wine_env.
 activate_app_env()
@@ -155,6 +148,21 @@ then
 fi
 
 
+if ! [ -f "$HOME/.wine-env_path" ] || ! [ -f "$HOME/.wine_env" ];
+then
+    abort "No ~/.wine-env_path or ~/.wine_env files found. Run setup first."
+fi
+
+
+if [ "$WINE_ENV_PATH" == "" ];
+then
+    source "$HOME/.wine_env"
+fi
+
+
+source "$WINE_ENV_PATH/wine_cmds"
+
+
 check_requirements
 
 
@@ -168,7 +176,7 @@ EXEC_BASENAME=$(basename "$EXEC_PATH" .exe)
 check_exec_arch "$EXEC_PATH"
 
 
-if [ "$WINE32_NEEDED" == "0" ] && [ "$WINE64_NEEDED" == ""];
+if [ "$WINE32_NEEDED" == "0" ] && [ "$WINE64_NEEDED" == "" ];
 then
     abort "Not a Windows executable."
 fi
@@ -205,7 +213,7 @@ if ! [ "$WINE_PATH" == "" ];
 then
     if [ -f "$WINE_PATH/.wine_version" ];
     then
-        . use_wine "$WINE_PATH"
+        . wine_load "$WINE_PATH"
     fi
 
 elif ! [ "$WINE_BRANCH" == "" ] && ! [ "$WINE_VERSION" == "" ];
@@ -214,14 +222,14 @@ then
     then
         if [ -d "/opt/wine-${WINE_VERSION}_i386/opt/wine-${WINE_BRANCH}" ];
         then
-            . use_wine /opt/wine-${WINE_VERSION}
+            . wine_load /opt/wine-${WINE_VERSION}
         fi
 
     elif [ "$WINE64_NEEDED" == "1" ];
     then
         if [ -d "/opt/wine-${WINE_VERSION}_amd64/opt/wine-${WINE_BRANCH}" ];
         then
-            . use_wine /opt/wine-${WINE_VERSION}
+            . wine_load /opt/wine-${WINE_VERSION}
         fi
     fi
 
@@ -236,7 +244,7 @@ else
             echo "Cannot find ~/.default_win32_env."
             abort "Unable to determine the Wine installation to use."
         else
-            . use_wine $(cat ~/.default_win32_env)
+            . wine_load $(cat ~/.default_win32_env)
         fi
     fi
 fi

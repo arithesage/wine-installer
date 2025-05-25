@@ -94,6 +94,7 @@ fi
 $SUDO cp -r "$SCRIPT_DIR/cmds" "$WINE_ENV_PATH/"
 $SUDO cp -r "$SCRIPT_DIR/aux" "$WINE_ENV_PATH/"
 
+$SUDO cp "$SCRIPT_DIR/wine_cmds" "$WINE_ENV_PATH/"
 $SUDO cp "$SCRIPT_DIR/install_deps" "$WINE_ENV_PATH/"
 $SUDO cp "$SCRIPT_DIR/install_wine32_deps" "$WINE_ENV_PATH/"
 $SUDO cp "$SCRIPT_DIR/install_wine64_deps" "$WINE_ENV_PATH/"

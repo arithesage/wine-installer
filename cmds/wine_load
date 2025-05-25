@@ -1,6 +1,20 @@
 #!/bin/bash
 
-function check_for_valid_wine_installation
+abort()
+{
+    MESSAGE=$1
+
+    if ! [ "$MESSAGE" == "" ];
+    then
+        echo "$MESSAGE"
+        echo ""
+    fi
+
+    exit 1
+}
+
+
+check_for_valid_wine_installation()
 {
     WINE_PATH=$1
 
@@ -18,7 +32,7 @@ function check_for_valid_wine_installation
 }
 
 
-function usage
+usage()
 {
     echo "Usage: . wine_load <Wine installation path>"
     echo "       source wine_load <Wine installation path>"
@@ -28,17 +42,22 @@ function usage
 }
 
 
-SCRIPT_DIR=$(realpath $(dirname ${BASH_SOURCE[0]}))
 
 
-
-
-if [ "$1" == "" ];
+if [ "$1" == "" ] || [ "$1" == "-h" ] || [ "$1" == "--help" ];
 then
     usage
-else
-    export WINE_PATH=$(realpath $1)
+    abort
 fi
+
+
+if ! [ -f "$HOME/.wine-env_path" ] || [ -f "$HOME/.wine_env" ];
+then
+    abort "No ~/.wine-env_path or ~/.wine_env files found. Run setup first."
+fi
+
+
+WINE_PATH=$1
 
 
 if ! [ "$WINE_PATH" == "" ];
