@@ -94,6 +94,12 @@ fi
 $SUDO cp -r "$SCRIPT_DIR/cmds" "$WINE_ENV_PATH/"
 $SUDO cp -r "$SCRIPT_DIR/aux" "$WINE_ENV_PATH/"
 
+$SUDO cp "$SCRIPT_DIR/install_wine32_deps" "$WINE_ENV_PATH/"
+$SUDO cp "$SCRIPT_DIR/install_wine64_deps" "$WINE_ENV_PATH/"
+
+$SUDO cp $SCRIPT_DIR/install_deps_for_* "$WINE_ENV_PATH/"
+
+
 if [ "$1" == "" ];
 then
     $SUDO chown -R root:root "$WINE_ENV_PATH"

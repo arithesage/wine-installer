@@ -48,6 +48,7 @@ function usage
 }
 
 
+
 if [ "$1" == "-h" ] || [ "$1" == "--help" ];
 then
     usage
@@ -129,6 +130,7 @@ then
         echo "both architectures (i386 and amd64)."
 
         ARCH="both"
+
     else
         echo "i386, so will install Wine only for that architecture."
 
@@ -217,11 +219,12 @@ if [ "$ARCH" == "i386" ] || [ "$ARCH" == "both" ];
 then
     if ! [ -f "$HOME/.wine32_deps_installed" ];
     then
+        echo ""
         echo "Installing Wine (32 bits) dependencies. They may be installed yet"
         echo "yet, but cannot find the ~/.wine32_deps_installed file."
         echo ""
 
-        "$SCRIPT_DIR/install_wine32_deps"
+        "$WINE_ENV_PATH/install_wine32_deps"
     fi
 fi
 
@@ -230,18 +233,20 @@ if [ "$ARCH" == "amd64" ] || [ "$ARCH" == "both" ];
 then
     if ! [ -f "$HOME/.wine64_deps_installed" ];
     then
+        echo ""
         echo "Installing Wine (64 bits) dependencies. They may be installed"
         echo "yet, but cannot find the ~/.wine64_deps_installed file."
         echo ""
 
-        "$SCRIPT_DIR/install_wine64_deps"
+        "$WINE_ENV_PATH/install_wine64_deps"
     fi
 fi
 
 
 echo ""
-echo "Downloading wine-${WINE_BRANCH} (${WINE_VERSION})..."
-echo "-----------------------------------------------------"
+echo -n "Downloading wine-${WINE_BRANCH} (${WINE_VERSION}) "
+echo "for $ARCH architecture/s ..."
+echo "--------------------------------------------------------------------"
 
 cd $WINE_DOWNLOAD_DIR
 
